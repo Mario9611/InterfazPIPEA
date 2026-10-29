@@ -1,0 +1,631 @@
+[
+    {
+        "id": "eb1363c5970b07e4",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "dcac3b627b1d027c",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "c0c2902732d69e76",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#fcfcfd",
+            "primary": "#0d74ce",
+            "bgPage": "#f9f9fb",
+            "groupBg": "#ffffff",
+            "groupOutline": "#d9d9e0"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "f8b0524bef70a387",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.0.100",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "b3e1f0a2.broker",
+        "type": "mqtt-broker",
+        "name": "Mosquitto PIPEA",
+        "broker": "broker.hivemq.com",
+        "port": "1883",
+        "clientid": "interfaz_node_red_pipea",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "pipea/interfaz/estado",
+        "birthQos": "0",
+        "birthRetain": "true",
+        "birthPayload": "online",
+        "birthMsg": {},
+        "closeTopic": "pipea/interfaz/estado",
+        "closeQos": "0",
+        "closeRetain": "true",
+        "closePayload": "offline",
+        "closeMsg": {},
+        "willTopic": "pipea/interfaz/estado",
+        "willQos": "0",
+        "willRetain": "true",
+        "willPayload": "offline",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "6999affa22cefde2",
+        "type": "ui-page",
+        "name": "Control PIPEA",
+        "ui": "dcac3b627b1d027c",
+        "path": "/page1",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "c0c2902732d69e76",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "4df33a8f9b357f86",
+        "type": "ui-group",
+        "name": "Nodos",
+        "page": "6999affa22cefde2",
+        "width": "5",
+        "height": 1,
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "bbc5a2fd25698783",
+        "type": "ui-group",
+        "name": "Configuración de escena",
+        "page": "6999affa22cefde2",
+        "width": "9",
+        "height": 1,
+        "order": 2,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "f1_mqtt_registro",
+        "type": "mqtt in",
+        "z": "eb1363c5970b07e4",
+        "name": "Escucha Registros",
+        "topic": "pipea/registro/+",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "b3e1f0a2.broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 100,
+        "wires": [
+            [
+                "f2_procesar_registro"
+            ]
+        ]
+    },
+    {
+        "id": "f2_procesar_registro",
+        "type": "function",
+        "z": "eb1363c5970b07e4",
+        "name": "Gestor de Memoria Global",
+        "func": "// Inicializar la base de datos de nodos en el contexto global si no existe\nlet mapaNodos = global.get('pipea_nodos') || {};\nlet historialNodos = global.get('pipea_historial') || {};\n\n// Extraer el ID del nodo desde el tópico (pipea/registro/ID)\nlet topicParts = msg.topic.split('/');\nlet nodoId = topicParts[2];\n\nlet payload = msg.payload;\n\n// Si el payload está vacío o tiene estado offline (LWT o desconexión)\nif (!payload || payload.estado === \"offline\") {\n    if (mapaNodos[nodoId]) {\n        // Pasar a historial de desconectados guardando sus últimas capacidades\n        historialNodos[nodoId] = {\n            ...mapaNodos[nodoId],\n            ultimo_visto: new Date().toLocaleTimeString(),\n            conectado: false\n        };\n        delete mapaNodos[nodoId];\n    }\n} else {\n    // Nodo Online: Registrar o actualizar capacidades\n    mapaNodos[nodoId] = {\n        ...payload,\n        ultimo_visto: new Date().toLocaleTimeString(),\n        conectado: true\n    };\n    \n    // Si existía en el historial, lo removemos de ahí porque volvió a conectarse\n    if (historialNodos[nodoId]) {\n        delete historialNodos[nodoId];\n    }\n}\n\n// Guardar los cambios de vuelta en la memoria global de Node-RED\nglobal.set('pipea_nodos', mapaNodos);\nglobal.set('pipea_historial', historialNodos);\n\n// Enviar los datos consolidados hacia la interfaz visual\nmsg.payload = {\n    conectados: Object.values(mapaNodos),\n    historial: Object.values(historialNodos)\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 160,
+        "wires": [
+            [
+                "f3_debug_registro",
+                "5ea165f2e6429c1b"
+            ]
+        ]
+    },
+    {
+        "id": "f3_debug_registro",
+        "type": "debug",
+        "z": "eb1363c5970b07e4",
+        "name": "Ver Red Consolidada",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "f4_live_preview",
+        "type": "function",
+        "z": "eb1363c5970b07e4",
+        "name": "Enrutador Live Preview",
+        "func": "// Esta función intercepta los movimientos de sliders/colores de la interfaz antes de aplicar\n// msg.payload debe contener: { nodoId: \"lucia_01\", parametro: \"intensidadPARes\", valor: 0.75 }\n\nlet nodoId = msg.payload.nodoId;\nlet parametro = msg.payload.parametro;\nlet valor = msg.payload.valor;\n\nmsg.topic = `pipea/live/${nodoId}/${parametro}`;\nmsg.payload = valor;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 460,
+        "wires": [
+            [
+                "f5_mqtt_live_out"
+            ]
+        ]
+    },
+    {
+        "id": "f5_mqtt_live_out",
+        "type": "mqtt out",
+        "z": "eb1363c5970b07e4",
+        "name": "MQTT Live Inalámbrico",
+        "topic": "",
+        "qos": "0",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b3e1f0a2.broker",
+        "x": 550,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "5ea165f2e6429c1b",
+        "type": "ui-template",
+        "z": "eb1363c5970b07e4",
+        "group": "4df33a8f9b357f86",
+        "page": "",
+        "ui": "",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "head": "",
+        "format": "<template>\n  <v-card class=\"pa-2\" outlined min-height=\"400\" style=\"background-color: #f8f9fa;\">\n    <v-card-title class=\"text-subtitle-1 font-weight-bold primary--text\">\n      🔴 Red PIPEA Escénica\n    </v-card-title>\n    <v-divider></v-divider>\n\n    <!-- SECCIÓN DE NODOS ACTIVOS -->\n    <v-list subheader flat transparent>\n      <v-list-subheader class=\"font-weight-bold text-success\">\n        Conectados en Vivo ({{ msg?.payload?.conectados?.length || 0 }})\n      </v-list-subheader>\n      \n      <!-- Agregamos @click y estilo de cursor interactivo -->\n      <v-list-item \n        v-for=\"nodo in msg?.payload?.conectados\" \n        :key=\"nodo.id\" \n        class=\"mb-1\" \n        style=\"background-color: #e8f5e9; border-left: 5px solid #4caf50; border-radius: 4px; cursor: pointer;\"\n        @click=\"seleccionarNodo(nodo)\"\n      >\n        <template v-slot:prepend>\n          <v-icon color=\"success\">mdi-wifi</v-icon>\n        </template>\n        <v-list-item-title class=\"font-weight-bold\">{{ nodo.id }}</v-list-item-title>\n        <v-list-item-subtitle>\n          Tipo: {{ nodo.tipo_nodo }} | Personaje: <v-chip size=\"x-small\" color=\"success\" variant=\"flat\">{{ nodo.personaje_asignado || 'Ninguno' }}</v-chip>\n        </v-list-item-subtitle>\n      </v-list-item>\n\n      <v-list-item v-if=\"!msg?.payload?.conectados || msg?.payload?.conectados?.length === 0\">\n        <v-list-item-title class=\"text-muted text-caption italic\">Esperando nacimiento de nodos...</v-list-item-title>\n      </v-list-item>\n    </v-list>\n\n    <v-divider class=\"my-2\"></v-divider>\n\n    <!-- SECCIÓN DE HISTORIAL / DESCONECTADOS -->\n    <v-list subheader flat transparent>\n      <v-list-subheader class=\"font-weight-bold text-grey\">\n        Historial / Alerta Desconectados\n      </v-list-subheader>\n      \n      <!-- Agregamos @click y estilo de cursor interactivo para el historial -->\n      <v-list-item \n        v-for=\"nodo in msg?.payload?.historial\" \n        :key=\"nodo.id\" \n        class=\"mb-1\" \n        style=\"background-color: #f5f5f5; border-left: 5px solid #9e9e9e; border-radius: 4px; opacity: 0.7; cursor: pointer;\"\n        @click=\"seleccionarNodo(nodo)\"\n      >\n        <template v-slot:prepend>\n          <v-icon color=\"grey\">mdi-wifi-off</v-icon>\n        </template>\n        <v-list-item-title class=\"text-grey-darken-1\">{{ nodo.id }}</v-list-item-title>\n        <v-list-item-subtitle class=\"text-caption\">\n          Última vez visto: {{ nodo.ultimo_visto }}\n        </v-list-item-subtitle>\n      </v-list-item>\n\n      <v-list-item v-if=\"!msg?.payload?.historial || msg?.payload?.historial?.length === 0\">\n        <v-list-item-title class=\"text-muted text-caption\">Sin alertas de caída de red.</v-list-item-title>\n      </v-list-item>\n    </v-list>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  methods: {\n    seleccionarNodo(nodoData) {\n      // Esta función nativa de Dashboard 2.0 transmite los datos del nodo clickeado directamente hacia la salida del bloque\n      this.send({\n        payload: nodoData\n      });\n    }\n  }\n}\n</script>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 560,
+        "y": 240,
+        "wires": [
+            [
+                "054c4609126e762a"
+            ]
+        ]
+    },
+    {
+        "id": "054c4609126e762a",
+        "type": "function",
+        "z": "eb1363c5970b07e4",
+        "name": "Seleccionar Nodo Activo",
+        "func": "// Si el usuario hace clic sobre un nodo en la interfaz, capturamos su ID\nif (msg.payload && msg.payload.id) {\n    flow.set('nodo_seleccionado_id', msg.payload.id);\n}\n\n// Recuperamos la información completa de ese nodo desde la memoria global\nlet mapaNodos = global.get('pipea_nodos') || {};\nlet idSeleccionado = flow.get('nodo_seleccionado_id');\nlet nodoActual = mapaNodos[idSeleccionado];\n\n// Enviamos los datos del nodo seleccionado al panel central\nif (nodoActual) {\n    msg.payload = nodoActual;\n    return msg;\n}\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 300,
+        "wires": [
+            [
+                "8203cea0612e39f3"
+            ]
+        ]
+    },
+    {
+        "id": "8203cea0612e39f3",
+        "type": "ui-template",
+        "z": "eb1363c5970b07e4",
+        "group": "bbc5a2fd25698783",
+        "page": "",
+        "ui": "",
+        "name": "Panel Central de Configuración",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "head": "",
+        "format": "<template>\n  <v-card class=\"pa-4\" outlined min-height=\"400\" v-if=\"msg?.payload?.id\">\n    <!-- Encabezado del Nodo Seleccionado -->\n    <v-card-title class=\"d-flex justify-space-between align-center\">\n      <div class=\"text-h6 font-weight-bold\">\n        ⚙️ Configuración: <span class=\"text-primary\">{{ msg.payload.id }}</span>\n      </div>\n      <v-chip color=\"secondary\" variant=\"flat\">\n        Tipo: {{ msg.payload.tipo_nodo }}\n      </v-chip>\n    </v-card-title>\n    \n    <v-card-subtitle class=\"mb-4\">\n      Personaje en escena: <strong>{{ msg.payload.personaje_asignado || 'Por asignar' }}</strong>\n    </v-card-subtitle>\n    \n    <v-divider class=\"mb-4\"></v-divider>\n\n    <!-- FORMULARIO AUTOGENERADO BASADO EN CAPACIDADES -->\n    <div class=\"text-subtitle-2 font-weight-bold mb-2 text-grey-darken-2\">\n      Ajuste de Parámetros en Tiempo Real (Live Preview)\n    </div>\n\n    <v-row>\n      <v-col cols=\"12\" v-for=\"campo in msg.payload.campos_configurables\" :key=\"campo.clave\" class=\"py-1\">\n        \n        <!-- CONTROL TIPO FLOAT / ENTERO (Sliders) -->\n        <div v-if=\"campo.tipo === 'float' || campo.tipo === 'int'\">\n          <div class=\"d-flex justify-space-between text-caption font-weight-medium\">\n            <span>{{ campo.clave }}</span>\n            <span class=\"text-primary font-weight-bold\">{{ campo.defecto }}</span>\n          </div>\n          <v-slider\n            v-model=\"campo.defecto\"\n            :min=\"campo.min\"\n            :max=\"campo.max\"\n            :step=\"campo.tipo === 'float' ? 0.05 : 1\"\n            hide-details\n            density=\"compact\"\n            color=\"primary\"\n            @update:model-value=\"enviarCambioLive(msg.payload.id, campo.clave, campo.defecto)\"\n          ></v-slider>\n        </div>\n\n        <!-- CONTROL TIPO COLOR RGB -->\n        <div v-if=\"campo.tipo === 'color_rgb'\" class=\"d-flex align-center justify-space-between py-2\">\n          <span class=\"text-caption font-weight-medium\">{{ campo.clave }}</span>\n          <div class=\"d-flex align-center\">\n            <input \n              type=\"color\" \n              v-model=\"campo.defecto\" \n              style=\"border: none; width: 40px; height: 40px; cursor: pointer; border-radius: 4px;\"\n              @input=\"enviarCambioLive(msg.payload.id, campo.clave, campo.defecto)\"\n            />\n            <span class=\"text-caption ml-2 font-mono\">{{ campo.defecto }}</span>\n          </div>\n        </div>\n\n        <!-- CONTROL TIPO OPCIONES (Menú Desplegable) -->\n        <div v-if=\"campo.tipo === 'opciones'\">\n          <span class=\"text-caption font-weight-medium\">{{ campo.clave }}</span>\n          <v-select\n            v-model=\"campo.defecto\"\n            :items=\"campo.lista\"\n            density=\"compact\"\n            variant=\"outlined\"\n            hide-details\n            class=\"mt-1\"\n            @update:model-value=\"enviarCambioLive(msg.payload.id, campo.clave, campo.defecto)\"\n          ></v-select>\n        </div>\n\n      </v-col>\n    </v-row>\n\n    <v-divider class=\"my-4\"></v-divider>\n\n    <!-- ACCIONES DE GUARDADO PERMANENTE -->\n    <v-card-actions class=\"justify-end\">\n      <v-btn color=\"success\" variant=\"elevated\" prepend-icon=\"mdi-content-save\" class=\"px-6\">\n        Guardar en Escena Actual\n      </v-btn>\n    </v-card-actions>\n  </v-card>\n\n  <!-- Estado vacío cuando no hay selección -->\n  <v-card class=\"pa-8 text-center d-flex flex-column align-center justify-center text-muted\" min-height=\"400\" v-else>\n    <v-icon size=\"64\" color=\"grey-lighten-1\">mdi-gesture-tap-button</v-icon>\n    <div class=\"text-h6 mt-4 text-grey-darken-1\">Ningún nodo seleccionado</div>\n    <div class=\"text-body-2 text-grey-darken-1\">Selecciona un nodo de la red PIPEA en la barra izquierda para configurar sus acciones escénicas.</div>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  methods: {\n    enviarCambioLive(nodoId, parametro, valor) {\n      // Al mover cualquier control, enviamos un mensaje hacia la salida del nodo ui-template\n      this.send({\n        payload: {\n          nodoId: nodoId,\n          parametro: parametro,\n          valor: valor\n        }\n      });\n    }\n  }\n}\n</script>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 290,
+        "y": 380,
+        "wires": [
+            [
+                "f4_live_preview"
+            ]
+        ]
+    },
+    {
+        "id": "f6_ui_gestion_shows",
+        "type": "ui-template",
+        "z": "eb1363c5970b07e4",
+        "group": "bbc5a2fd25698783",
+        "page": "",
+        "ui": "",
+        "name": "Selector de Obras",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<template>\n  <v-card class=\"pa-4 mb-4\" outlined style=\"background-color: #fffde7; border: 1px solid #fbc02d;\">\n    <v-card-title class=\"text-subtitle-1 font-weight-bold text-amber-darken-4 d-flex align-center\">\n      <v-icon class=\"mr-2\">mdi-folder-play</v-icon> Gestión de Presentaciones / Actos\n    </v-card-title>\n    <v-card-text class=\"pt-2\">\n      <v-row class=\"align-center\" density=\"compact\">\n        <v-col cols=\"12\" sm=\"6\">\n          <v-text-field\n            v-model=\"nombreObra\"\n            label=\"Nombre de la Presentación / Obra\"\n            variant=\"outlined\"\n            density=\"compact\"\n            hide-details\n            prepend-inner-icon=\"mdi-file-document-edit\"\n          ></v-text-field>\n        </v-col>\n        <v-col cols=\"12\" sm=\"6\" class=\"d-flex ga-2\">\n          <v-btn color=\"amber-darken-3\" variant=\"elevated\" prepend-icon=\"mdi-content-save\" @click=\"guardarObra\">\n            Guardar\n          </v-btn>\n          <v-btn color=\"blue-grey-darken-2\" variant=\"outlined\" prepend-icon=\"mdi-folder-open\" @click=\"cargarObra\">\n            Cargar\n          </v-btn>\n        </v-col>\n      </v-row>\n    </v-card-text>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      nombreObra: 'obra_electrizarte_v1'\n    }\n  },\n  methods: {\n    guardarObra() {\n      this.send({ action: 'guardar', archivo: this.nombreObra });\n    },\n    cargarObra() {\n      this.send({ action: 'cargar', archivo: this.nombreObra });\n    }\n  }\n}\n</script>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 130,
+        "y": 580,
+        "wires": [
+            [
+                "f7_logica_archivos"
+            ]
+        ]
+    },
+    {
+        "id": "f7_logica_archivos",
+        "type": "function",
+        "z": "eb1363c5970b07e4",
+        "name": "Procesador de Archivo",
+        "func": "// Validar que el mensaje tenga la estructura esperada\nif (!msg.payload || typeof msg.payload !== 'object') {\n    return null; \n}\n\nlet accion = msg.payload.action;\nlet nombreArchivo = \"obra_default\";\n\nif (msg.payload.archivo) {\n    nombreArchivo = msg.payload.archivo.replace(/[^a-z0-9_]/gi, '_').toLowerCase();\n}\n\n// Ruta dinámica compatible para almacenamiento local\nmsg.filename = `obra_pipea_${nombreArchivo}.json`;\n\nif (accion === 'guardar') {\n    // Tomamos la fotografía de los nodos activos en memoria\n    let mapaNodos = global.get('pipea_nodos') || {};\n    \n    msg.payload = {\n        metadatos: {\n            nombre_presentacion: msg.payload.archivo || \"Sin Nombre\",\n            ultima_modificacion: new Date().toISOString()\n        },\n        configuracion_nodos: mapaNodos\n    };\n    \n    // Salida 1 va al nodo 'Escribir JSON'\n    return [msg, null];\n    \n} else if (accion === 'cargar') {\n    // Salida 2 va al nodo 'Leer JSON'\n    return [null, msg];\n}\n\nreturn null;",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 580,
+        "wires": [
+            [
+                "f8_write_file"
+            ],
+            [
+                "f9_read_file"
+            ]
+        ]
+    },
+    {
+        "id": "f8_write_file",
+        "type": "file",
+        "z": "eb1363c5970b07e4",
+        "name": "Escribir JSON",
+        "filename": "filename",
+        "filenameType": "msg",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 540,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f9_read_file",
+        "type": "file in",
+        "z": "eb1363c5970b07e4",
+        "name": "Leer JSON",
+        "filename": "filename",
+        "filenameType": "msg",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 530,
+        "y": 620,
+        "wires": [
+            [
+                "f10_inyectar_carga"
+            ]
+        ]
+    },
+    {
+        "id": "f10_inyectar_carga",
+        "type": "function",
+        "z": "eb1363c5970b07e4",
+        "name": "Restaurar Memoria e Inundar Red",
+        "func": "let dataObra = JSON.parse(msg.payload);\n\nif (dataObra && dataObra.configuracion_nodos) {\n    // 1. Restaurar la base de datos de memoria global con el JSON cargado\n    global.set('pipea_nodos', dataObra.configuracion_nodos);\n    \n    // 2. Iterar sobre cada uno de los nodos restaurados y enviar su configuración definitiva a la red\n    let listaNodos = Object.values(dataObra.configuracion_nodos);\n    let mensajesMqtt = [];\n    \n    listaNodos.forEach(nodo => {\n        mensajesMqtt.push({\n            topic: `pipea/config/${nodo.id}`,\n            payload: {\n                personaje_asignado: nodo.personaje_asignado,\n                campos_actualizados: nodo.campos_configurables\n            }\n        });\n    });\n    \n    // Enviamos el arreglo completo de mensajes MQTT simultáneamente\n    return [ { payload: { conectados: listaNodos, historial: Object.values(global.get('pipea_historial') || {}) } }, mensajesMqtt ];\n}\nreturn null;",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 720,
+        "wires": [
+            [
+                "f11_redireccionar_ui"
+            ],
+            [
+                "f12_mqtt_config_out",
+                "5ea165f2e6429c1b"
+            ]
+        ]
+    },
+    {
+        "id": "f11_redireccionar_ui",
+        "type": "debug",
+        "z": "eb1363c5970b07e4",
+        "name": "Actualizar UI Post-Carga",
+        "active": true,
+        "tosidebar": false,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload.conectados.length + ' nodos cargados'",
+        "statusType": "auto",
+        "x": 650,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "f12_mqtt_config_out",
+        "type": "mqtt out",
+        "z": "eb1363c5970b07e4",
+        "name": "MQTT Config Definitiva",
+        "topic": "",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b3e1f0a2.broker",
+        "x": 650,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "sim_lucia_01",
+        "type": "inject",
+        "z": "eb1363c5970b07e4",
+        "name": "Simular Nacimiento: LucíEA",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "pipea/registro/lucia_proscenio_01",
+        "payload": "{\"id\":\"lucia_proscenio_01\",\"tipo_nodo\":\"receptor_luces\",\"personaje_asignado\":\"Ambiente\",\"roles\":[\"reaccionar\"],\"campos_configurables\":[{\"clave\":\"intensidadPARes\",\"tipo\":\"float\",\"min\":0,\"max\":1,\"defecto\":0.8},{\"clave\":\"colorBase\",\"tipo\":\"color_rgb\",\"defecto\":\"#1fffff\"},{\"clave\":\"duracionTransicion\",\"tipo\":\"float\",\"min\":0,\"max\":10,\"defecto\":2}]}",
+        "payloadType": "str",
+        "x": 820,
+        "y": 280,
+        "wires": [
+            [
+                "sim_mqtt_out"
+            ]
+        ]
+    },
+    {
+        "id": "sim_teclado_01",
+        "type": "inject",
+        "z": "eb1363c5970b07e4",
+        "name": "Simular Nacimiento: Teclado",
+        "props": [
+            {
+                "p": "payload",
+                "v": "{\"id\":\"teclado_sofia_01\",\"tipo_nodo\":\"proponente_disparador\",\"personaje_asignado\":\"Sofía\",\"roles\":[\"proponer\"],\"campos_configurables\":[{\"clave\":\"accion_tecla_i\",\"tipo\":\"opciones\",\"lista\":[\"amanece\",\"anochece\",\"triste\",\"alegre\"],\"defecto\":\"alegre\"}]}",
+                "vType": "json"
+            },
+            {
+                "p": "topic",
+                "v": "pipea/registro/teclado_sofia_01",
+                "vType": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 830,
+        "y": 340,
+        "wires": [
+            [
+                "sim_mqtt_out"
+            ]
+        ]
+    },
+    {
+        "id": "sim_desconexion",
+        "type": "inject",
+        "z": "eb1363c5970b07e4",
+        "name": "Simular Desconexión (LWT)",
+        "props": [
+            {
+                "p": "payload",
+                "v": "{\"estado\":\"offline\"}",
+                "vType": "json"
+            },
+            {
+                "p": "topic",
+                "v": "pipea/registro/lucia_proscenio_01",
+                "vType": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 830,
+        "y": 400,
+        "wires": [
+            [
+                "sim_mqtt_out"
+            ]
+        ]
+    },
+    {
+        "id": "sim_mqtt_out",
+        "type": "mqtt out",
+        "z": "eb1363c5970b07e4",
+        "name": "Inyectar a Mosquitto",
+        "topic": "",
+        "qos": "0",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b3e1f0a2.broker",
+        "x": 1140,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "sim_escucha_live",
+        "type": "mqtt in",
+        "z": "eb1363c5970b07e4",
+        "name": "Monitor de Pruebas (Live y Config)",
+        "topic": "pipea/+/+/+",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "b3e1f0a2.broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 840,
+        "y": 500,
+        "wires": [
+            [
+                "sim_debug_monitor"
+            ]
+        ]
+    },
+    {
+        "id": "sim_debug_monitor",
+        "type": "debug",
+        "z": "eb1363c5970b07e4",
+        "name": "Monitor Tráfico Saliente",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1130,
+        "y": 500,
+        "wires": []
+    }
+]
