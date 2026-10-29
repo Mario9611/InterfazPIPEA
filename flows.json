@@ -227,8 +227,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 600,
-        "y": 160,
+        "x": 640,
+        "y": 120,
         "wires": []
     },
     {
@@ -287,7 +287,7 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 560,
+        "x": 460,
         "y": 240,
         "wires": [
             [
@@ -586,8 +586,8 @@
         "correl": "",
         "expiry": "",
         "broker": "b3e1f0a2.broker",
-        "x": 1140,
-        "y": 260,
+        "x": 1020,
+        "y": 140,
         "wires": []
     },
     {
