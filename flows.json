@@ -232,44 +232,6 @@
         "wires": []
     },
     {
-        "id": "f4_live_preview",
-        "type": "function",
-        "z": "eb1363c5970b07e4",
-        "name": "Enrutador Live Preview",
-        "func": "// Esta función intercepta los movimientos de sliders/colores de la interfaz antes de aplicar\n// msg.payload debe contener: { nodoId: \"lucia_01\", parametro: \"intensidadPARes\", valor: 0.75 }\n\nlet nodoId = msg.payload.nodoId;\nlet parametro = msg.payload.parametro;\nlet valor = msg.payload.valor;\n\nmsg.topic = `pipea/live/${nodoId}/${parametro}`;\nmsg.payload = valor;\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 270,
-        "y": 460,
-        "wires": [
-            [
-                "f5_mqtt_live_out"
-            ]
-        ]
-    },
-    {
-        "id": "f5_mqtt_live_out",
-        "type": "mqtt out",
-        "z": "eb1363c5970b07e4",
-        "name": "MQTT Live Inalámbrico",
-        "topic": "",
-        "qos": "0",
-        "retain": "false",
-        "respTopic": "",
-        "contentType": "",
-        "userProps": "",
-        "correl": "",
-        "expiry": "",
-        "broker": "b3e1f0a2.broker",
-        "x": 550,
-        "y": 460,
-        "wires": []
-    },
-    {
         "id": "5ea165f2e6429c1b",
         "type": "ui-template",
         "z": "eb1363c5970b07e4",
@@ -327,17 +289,17 @@
         "width": 0,
         "height": 0,
         "head": "",
-        "format": "<template>\n  <v-card class=\"pa-4\" outlined min-height=\"400\" v-if=\"msg?.payload?.id\">\n    <!-- Encabezado del Nodo Seleccionado -->\n    <v-card-title class=\"d-flex justify-space-between align-center\">\n      <div class=\"text-h6 font-weight-bold\">\n        ⚙️ Configuración: <span class=\"text-primary\">{{ msg.payload.id }}</span>\n      </div>\n      <v-chip color=\"secondary\" variant=\"flat\">\n        Tipo: {{ msg.payload.tipo_nodo }}\n      </v-chip>\n    </v-card-title>\n    \n    <v-card-subtitle class=\"mb-4\">\n      Personaje en escena: <strong>{{ msg.payload.personaje_asignado || 'Por asignar' }}</strong>\n    </v-card-subtitle>\n    \n    <v-divider class=\"mb-4\"></v-divider>\n\n    <!-- FORMULARIO AUTOGENERADO BASADO EN CAPACIDADES -->\n    <div class=\"text-subtitle-2 font-weight-bold mb-2 text-grey-darken-2\">\n      Ajuste de Parámetros en Tiempo Real (Live Preview)\n    </div>\n\n    <v-row>\n      <v-col cols=\"12\" v-for=\"campo in msg.payload.campos_configurables\" :key=\"campo.clave\" class=\"py-1\">\n        \n        <!-- CONTROL TIPO FLOAT / ENTERO (Sliders) -->\n        <div v-if=\"campo.tipo === 'float' || campo.tipo === 'int'\">\n          <div class=\"d-flex justify-space-between text-caption font-weight-medium\">\n            <span>{{ campo.clave }}</span>\n            <span class=\"text-primary font-weight-bold\">{{ campo.defecto }}</span>\n          </div>\n          <v-slider\n            v-model=\"campo.defecto\"\n            :min=\"campo.min\"\n            :max=\"campo.max\"\n            :step=\"campo.tipo === 'float' ? 0.05 : 1\"\n            hide-details\n            density=\"compact\"\n            color=\"primary\"\n            @update:model-value=\"enviarCambioLive(msg.payload.id, campo.clave, campo.defecto)\"\n          ></v-slider>\n        </div>\n\n        <!-- CONTROL TIPO COLOR RGB -->\n        <div v-if=\"campo.tipo === 'color_rgb'\" class=\"d-flex align-center justify-space-between py-2\">\n          <span class=\"text-caption font-weight-medium\">{{ campo.clave }}</span>\n          <div class=\"d-flex align-center\">\n            <input \n              type=\"color\" \n              v-model=\"campo.defecto\" \n              style=\"border: none; width: 40px; height: 40px; cursor: pointer; border-radius: 4px;\"\n              @input=\"enviarCambioLive(msg.payload.id, campo.clave, campo.defecto)\"\n            />\n            <span class=\"text-caption ml-2 font-mono\">{{ campo.defecto }}</span>\n          </div>\n        </div>\n\n        <!-- CONTROL TIPO OPCIONES (Menú Desplegable) -->\n        <div v-if=\"campo.tipo === 'opciones'\">\n          <span class=\"text-caption font-weight-medium\">{{ campo.clave }}</span>\n          <v-select\n            v-model=\"campo.defecto\"\n            :items=\"campo.lista\"\n            density=\"compact\"\n            variant=\"outlined\"\n            hide-details\n            class=\"mt-1\"\n            @update:model-value=\"enviarCambioLive(msg.payload.id, campo.clave, campo.defecto)\"\n          ></v-select>\n        </div>\n\n      </v-col>\n    </v-row>\n\n    <v-divider class=\"my-4\"></v-divider>\n\n    <!-- ACCIONES DE GUARDADO PERMANENTE -->\n    <v-card-actions class=\"justify-end\">\n      <v-btn color=\"success\" variant=\"elevated\" prepend-icon=\"mdi-content-save\" class=\"px-6\">\n        Guardar en Escena Actual\n      </v-btn>\n    </v-card-actions>\n  </v-card>\n\n  <!-- Estado vacío cuando no hay selección -->\n  <v-card class=\"pa-8 text-center d-flex flex-column align-center justify-center text-muted\" min-height=\"400\" v-else>\n    <v-icon size=\"64\" color=\"grey-lighten-1\">mdi-gesture-tap-button</v-icon>\n    <div class=\"text-h6 mt-4 text-grey-darken-1\">Ningún nodo seleccionado</div>\n    <div class=\"text-body-2 text-grey-darken-1\">Selecciona un nodo de la red PIPEA en la barra izquierda para configurar sus acciones escénicas.</div>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  methods: {\n    enviarCambioLive(nodoId, parametro, valor) {\n      // Al mover cualquier control, enviamos un mensaje hacia la salida del nodo ui-template\n      this.send({\n        payload: {\n          nodoId: nodoId,\n          parametro: parametro,\n          valor: valor\n        }\n      });\n    }\n  }\n}\n</script>",
+        "format": "<template>\n  <v-card class=\\\"pa-4\\\" outlined min-height=\\\"400\\\" v-if=\\\"msg?.payload?.id\\\">\n    <!-- Encabezado del Nodo Seleccionado -->\n    <v-card-title class=\\\"d-flex justify-space-between align-center\\\">\n      <div class=\\\"text-h6 font-weight-bold\\\">\n        ⚙️ Matriz de Asignación: <span class=\\\"text-primary\\\">{{ msg.payload.id }}</span>\n      </div>\n      <v-chip color=\\\"secondary\\\" variant=\\\"flat\\\">\n        Tipo: {{ msg.payload.tipo_nodo }}\n      </v-chip>\\n    </v-card-title>\n    \n    <v-card-subtitle class=\\\"mb-4\\\">\n      Personaje en escena: <strong>{{ msg.payload.personaje_asignado || 'Por asignar' }}</strong>\n    </v-card-subtitle>\n    \n    <v-divider class=\\\"mb-4\\\"></v-divider>\n\n    <!-- FORMULARIO ESTÁTICO (YA NO ENVÍA LIVE PREVIEW) -->\n    <div class=\\\"text-subtitle-2 font-weight-bold mb-2 text-grey-darken-2\\\">\n      Ajuste Fijo de Parámetros Escénicos\n    </div>\n\n    <v-row>\n      <v-col cols=\\\"12\\\" v-for=\\\"campo in msg.payload.campos_configurables\\\" :key=\\\"campo.clave\\\" class=\\\"py-1\\\">\n        \n        <!-- CONTROL TIPO FLOAT / ENTERO -->\n        <div v-if=\\\"campo.tipo === 'float' || campo.tipo === 'int'\\\">\n          <div class=\\\"d-flex justify-space-between text-caption font-weight-medium\\\">\n            <span>{{ campo.clave }}</span>\\n            <span class=\\\"text-primary font-weight-bold\\\">{{ campo.defecto }}</span>\n          </div>\n          <v-slider\n            v-model=\\\"campo.defecto\\\"\n            :min=\\\"campo.min\\\"\n            :max=\\\"campo.max\\\"\n            :step=\\\"campo.tipo === 'float' ? 0.05 : 1\\\"\n            hide-details\n            density=\\\"compact\\\"\n            color=\\\"primary\\\"\n          ></v-slider>\n        </div>\n\n        <!-- CONTROL TIPO COLOR RGB -->\n        <div v-if=\\\"campo.tipo === 'color_rgb'\\\" class=\\\"d-flex align-center justify-space-between py-2\\\">\\n          <span class=\\\"text-caption font-weight-medium\\\">{{ campo.clave }}</span>\n          <div class=\\\"d-flex align-center\\\">\n            <input \n              type=\\\"color\\\" \n              v-model=\\\"campo.defecto\\\" \n              style=\\\"border: none; width: 40px; height: 40px; cursor: pointer; border-radius: 4px;\\\"\n            />\n            <span class=\\\"text-caption ml-2 font-mono\\\">{{ campo.defecto }}</span>\n          </div>\n        </div>\n\n        <!-- CONTROL TIPO OPCIONES -->\n        <div v-if=\\\"campo.tipo === 'opciones'\\\">\\n          <span class=\\\"text-caption font-weight-medium\\\">{{ campo.clave }}</span>\n          <v-select\n            v-model=\\\"campo.defecto\\\"\n            :items=\\\"campo.lista\\\"\n            density=\\\"compact\\\"\n            variant=\\\"outlined\\\"\n            hide-details\n            class=\\\"mt-1\\\"\n          ></v-select>\n        </div>\n\n      </v-col>\n    </v-row>\n\n    <v-divider class=\\\"my-4\\\"></v-divider>\n\n    <!-- BOTÓN DE ASIGNACIÓN ESTÁTICA -->\n    <v-card-actions class=\\\"justify-end\\\">\n      <v-btn color=\\\"primary\\\" variant=\\\"elevated\\\" prepend-icon=\\\"mdi-check-circle\\\" class=\\\"px-6\\\" @click=\\\"aplicarMatrizAsignacion(msg.payload)\\\">\n        Aplicar Cambios a Memoria\n      </v-btn>\\n    </v-card-actions>\n  </v-card>\n\n  <!-- Estado vacío cuando no hay selección -->\n  <v-card class=\\\"pa-8 text-center d-flex flex-column align-center justify-center text-muted\\\" min-height=\\\"400\\\" v-else>\n    <v-icon size=\\\"64\\\" color=\\\"grey-lighten-1\\\">mdi-gesture-tap-button</v-icon>\n    <div class=\\\"text-h6 mt-4 text-grey-darken-1\\\">Ningún nodo seleccionado</div>\n    <div class=\\\"text-body-2 text-grey-darken-1\\\">Selecciona un nodo de la red PIPEA en la barra izquierda para configurar sus acciones escénicas.</div>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  methods: {\n    aplicarMatrizAsignacion(nodoCompleto) {\n      // Enviamos el objeto completo editado únicamente al hacer clic en el botón\n      this.send({\n        payload: nodoCompleto\n      });\n    }\n  }\n}\n</script>",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 290,
-        "y": 380,
+        "x": 330,
+        "y": 400,
         "wires": [
             [
-                "f4_live_preview"
+                "a9a16a9bf9b21c75"
             ]
         ]
     },
@@ -627,5 +589,23 @@
         "x": 1130,
         "y": 500,
         "wires": []
+    },
+    {
+        "id": "a9a16a9bf9b21c75",
+        "type": "function",
+        "z": "eb1363c5970b07e4",
+        "name": "actualizar nodo en memoria",
+        "func": "// Recibe el nodo editado desde Vuetify\nlet nodoEditado = msg.payload;\n\nif (nodoEditado && nodoEditado.id) {\n    // Traer base de datos actual de la memoria global\n    let mapaNodos = global.get('pipea_nodos') || {};\n\n    // Sobrescribir los parámetros modificados en el objeto original\n    mapaNodos[nodoEditado.id] = nodoEditado;\n\n    // Guardar de vuelta en la memoria global\n    global.set('pipea_nodos', mapaNodos);\n}\nreturn null; // No ocupamos salida visual inmediata",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 460,
+        "wires": [
+            []
+        ]
     }
 ]
