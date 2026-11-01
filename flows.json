@@ -141,15 +141,15 @@
         ],
         "order": 1,
         "className": "",
-        "visible": "true",
-        "disabled": "false"
+        "visible": true,
+        "disabled": false
     },
     {
         "id": "4df33a8f9b357f86",
         "type": "ui-group",
         "name": "Nodos",
         "page": "6999affa22cefde2",
-        "width": "5",
+        "width": "4",
         "height": 1,
         "order": 1,
         "showTitle": true,
@@ -163,7 +163,7 @@
         "type": "ui-group",
         "name": "Configuración de escena",
         "page": "6999affa22cefde2",
-        "width": "9",
+        "width": "8",
         "height": 1,
         "order": 2,
         "showTitle": true,
@@ -186,7 +186,7 @@
         "rh": 0,
         "inputs": 0,
         "x": 110,
-        "y": 100,
+        "y": 80,
         "wires": [
             [
                 "f2_procesar_registro"
@@ -210,7 +210,8 @@
         "wires": [
             [
                 "f3_debug_registro",
-                "5ea165f2e6429c1b"
+                "5ea165f2e6429c1b",
+                "748bf7aab34aba95"
             ]
         ]
     },
@@ -238,7 +239,7 @@
         "group": "4df33a8f9b357f86",
         "page": "",
         "ui": "",
-        "name": "",
+        "name": "Panel izquierdo",
         "order": 1,
         "width": 0,
         "height": 0,
@@ -249,83 +250,10 @@
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 460,
-        "y": 240,
+        "x": 240,
+        "y": 320,
         "wires": [
-            [
-                "054c4609126e762a"
-            ]
-        ]
-    },
-    {
-        "id": "054c4609126e762a",
-        "type": "function",
-        "z": "eb1363c5970b07e4",
-        "name": "Seleccionar Nodo Activo",
-        "func": "// Si el usuario hace clic sobre un nodo en la interfaz, capturamos su ID\nif (msg.payload && msg.payload.id) {\n    flow.set('nodo_seleccionado_id', msg.payload.id);\n}\n\n// Recuperamos la información completa de ese nodo desde la memoria global\nlet mapaNodos = global.get('pipea_nodos') || {};\nlet idSeleccionado = flow.get('nodo_seleccionado_id');\nlet nodoActual = mapaNodos[idSeleccionado];\n\n// Enviamos los datos del nodo seleccionado al panel central\nif (nodoActual) {\n    msg.payload = nodoActual;\n    return msg;\n}\nreturn null;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 290,
-        "y": 300,
-        "wires": [
-            [
-                "8203cea0612e39f3"
-            ]
-        ]
-    },
-    {
-        "id": "8203cea0612e39f3",
-        "type": "ui-template",
-        "z": "eb1363c5970b07e4",
-        "group": "bbc5a2fd25698783",
-        "page": "",
-        "ui": "",
-        "name": "Panel Central de Configuración",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "head": "",
-        "format": "<template>\n  <v-card class=\\\"pa-4\\\" outlined min-height=\\\"400\\\" v-if=\\\"msg?.payload?.id\\\">\n    <!-- Encabezado del Nodo Seleccionado -->\n    <v-card-title class=\\\"d-flex justify-space-between align-center\\\">\n      <div class=\\\"text-h6 font-weight-bold\\\">\n        ⚙️ Matriz de Asignación: <span class=\\\"text-primary\\\">{{ msg.payload.id }}</span>\n      </div>\n      <v-chip color=\\\"secondary\\\" variant=\\\"flat\\\">\n        Tipo: {{ msg.payload.tipo_nodo }}\n      </v-chip>\\n    </v-card-title>\n    \n    <v-card-subtitle class=\\\"mb-4\\\">\n      Personaje en escena: <strong>{{ msg.payload.personaje_asignado || 'Por asignar' }}</strong>\n    </v-card-subtitle>\n    \n    <v-divider class=\\\"mb-4\\\"></v-divider>\n\n    <!-- FORMULARIO ESTÁTICO (YA NO ENVÍA LIVE PREVIEW) -->\n    <div class=\\\"text-subtitle-2 font-weight-bold mb-2 text-grey-darken-2\\\">\n      Ajuste Fijo de Parámetros Escénicos\n    </div>\n\n    <v-row>\n      <v-col cols=\\\"12\\\" v-for=\\\"campo in msg.payload.campos_configurables\\\" :key=\\\"campo.clave\\\" class=\\\"py-1\\\">\n        \n        <!-- CONTROL TIPO FLOAT / ENTERO -->\n        <div v-if=\\\"campo.tipo === 'float' || campo.tipo === 'int'\\\">\n          <div class=\\\"d-flex justify-space-between text-caption font-weight-medium\\\">\n            <span>{{ campo.clave }}</span>\\n            <span class=\\\"text-primary font-weight-bold\\\">{{ campo.defecto }}</span>\n          </div>\n          <v-slider\n            v-model=\\\"campo.defecto\\\"\n            :min=\\\"campo.min\\\"\n            :max=\\\"campo.max\\\"\n            :step=\\\"campo.tipo === 'float' ? 0.05 : 1\\\"\n            hide-details\n            density=\\\"compact\\\"\n            color=\\\"primary\\\"\n          ></v-slider>\n        </div>\n\n        <!-- CONTROL TIPO COLOR RGB -->\n        <div v-if=\\\"campo.tipo === 'color_rgb'\\\" class=\\\"d-flex align-center justify-space-between py-2\\\">\\n          <span class=\\\"text-caption font-weight-medium\\\">{{ campo.clave }}</span>\n          <div class=\\\"d-flex align-center\\\">\n            <input \n              type=\\\"color\\\" \n              v-model=\\\"campo.defecto\\\" \n              style=\\\"border: none; width: 40px; height: 40px; cursor: pointer; border-radius: 4px;\\\"\n            />\n            <span class=\\\"text-caption ml-2 font-mono\\\">{{ campo.defecto }}</span>\n          </div>\n        </div>\n\n        <!-- CONTROL TIPO OPCIONES -->\n        <div v-if=\\\"campo.tipo === 'opciones'\\\">\\n          <span class=\\\"text-caption font-weight-medium\\\">{{ campo.clave }}</span>\n          <v-select\n            v-model=\\\"campo.defecto\\\"\n            :items=\\\"campo.lista\\\"\n            density=\\\"compact\\\"\n            variant=\\\"outlined\\\"\n            hide-details\n            class=\\\"mt-1\\\"\n          ></v-select>\n        </div>\n\n      </v-col>\n    </v-row>\n\n    <v-divider class=\\\"my-4\\\"></v-divider>\n\n    <!-- BOTÓN DE ASIGNACIÓN ESTÁTICA -->\n    <v-card-actions class=\\\"justify-end\\\">\n      <v-btn color=\\\"primary\\\" variant=\\\"elevated\\\" prepend-icon=\\\"mdi-check-circle\\\" class=\\\"px-6\\\" @click=\\\"aplicarMatrizAsignacion(msg.payload)\\\">\n        Aplicar Cambios a Memoria\n      </v-btn>\\n    </v-card-actions>\n  </v-card>\n\n  <!-- Estado vacío cuando no hay selección -->\n  <v-card class=\\\"pa-8 text-center d-flex flex-column align-center justify-center text-muted\\\" min-height=\\\"400\\\" v-else>\n    <v-icon size=\\\"64\\\" color=\\\"grey-lighten-1\\\">mdi-gesture-tap-button</v-icon>\n    <div class=\\\"text-h6 mt-4 text-grey-darken-1\\\">Ningún nodo seleccionado</div>\n    <div class=\\\"text-body-2 text-grey-darken-1\\\">Selecciona un nodo de la red PIPEA en la barra izquierda para configurar sus acciones escénicas.</div>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  methods: {\n    aplicarMatrizAsignacion(nodoCompleto) {\n      // Enviamos el objeto completo editado únicamente al hacer clic en el botón\n      this.send({\n        payload: nodoCompleto\n      });\n    }\n  }\n}\n</script>",
-        "storeOutMessages": true,
-        "passthru": true,
-        "resendOnRefresh": true,
-        "templateScope": "local",
-        "className": "",
-        "x": 330,
-        "y": 400,
-        "wires": [
-            [
-                "a9a16a9bf9b21c75"
-            ]
-        ]
-    },
-    {
-        "id": "f6_ui_gestion_shows",
-        "type": "ui-template",
-        "z": "eb1363c5970b07e4",
-        "group": "bbc5a2fd25698783",
-        "page": "",
-        "ui": "",
-        "name": "Selector de Obras",
-        "order": 1,
-        "width": 0,
-        "height": 0,
-        "format": "<template>\n  <v-card class=\"pa-4 mb-4\" outlined style=\"background-color: #fffde7; border: 1px solid #fbc02d;\">\n    <v-card-title class=\"text-subtitle-1 font-weight-bold text-amber-darken-4 d-flex align-center\">\n      <v-icon class=\"mr-2\">mdi-folder-play</v-icon> Gestión de Presentaciones / Actos\n    </v-card-title>\n    <v-card-text class=\"pt-2\">\n      <v-row class=\"align-center\" density=\"compact\">\n        <v-col cols=\"12\" sm=\"6\">\n          <v-text-field\n            v-model=\"nombreObra\"\n            label=\"Nombre de la Presentación / Obra\"\n            variant=\"outlined\"\n            density=\"compact\"\n            hide-details\n            prepend-inner-icon=\"mdi-file-document-edit\"\n          ></v-text-field>\n        </v-col>\n        <v-col cols=\"12\" sm=\"6\" class=\"d-flex ga-2\">\n          <v-btn color=\"amber-darken-3\" variant=\"elevated\" prepend-icon=\"mdi-content-save\" @click=\"guardarObra\">\n            Guardar\n          </v-btn>\n          <v-btn color=\"blue-grey-darken-2\" variant=\"outlined\" prepend-icon=\"mdi-folder-open\" @click=\"cargarObra\">\n            Cargar\n          </v-btn>\n        </v-col>\n      </v-row>\n    </v-card-text>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      nombreObra: 'obra_electrizarte_v1'\n    }\n  },\n  methods: {\n    guardarObra() {\n      this.send({ action: 'guardar', archivo: this.nombreObra });\n    },\n    cargarObra() {\n      this.send({ action: 'cargar', archivo: this.nombreObra });\n    }\n  }\n}\n</script>",
-        "storeOutMessages": true,
-        "passthru": true,
-        "resendOnRefresh": true,
-        "templateScope": "local",
-        "className": "",
-        "x": 130,
-        "y": 580,
-        "wires": [
-            [
-                "f7_logica_archivos"
-            ]
+            []
         ]
     },
     {
@@ -333,14 +261,14 @@
         "type": "function",
         "z": "eb1363c5970b07e4",
         "name": "Procesador de Archivo",
-        "func": "// Validar que el mensaje tenga la estructura esperada\nif (!msg.payload || typeof msg.payload !== 'object') {\n    return null; \n}\n\nlet accion = msg.payload.action;\nlet nombreArchivo = \"obra_default\";\n\nif (msg.payload.archivo) {\n    nombreArchivo = msg.payload.archivo.replace(/[^a-z0-9_]/gi, '_').toLowerCase();\n}\n\n// Ruta dinámica compatible para almacenamiento local\nmsg.filename = `obra_pipea_${nombreArchivo}.json`;\n\nif (accion === 'guardar') {\n    // Tomamos la fotografía de los nodos activos en memoria\n    let mapaNodos = global.get('pipea_nodos') || {};\n    \n    msg.payload = {\n        metadatos: {\n            nombre_presentacion: msg.payload.archivo || \"Sin Nombre\",\n            ultima_modificacion: new Date().toISOString()\n        },\n        configuracion_nodos: mapaNodos\n    };\n    \n    // Salida 1 va al nodo 'Escribir JSON'\n    return [msg, null];\n    \n} else if (accion === 'cargar') {\n    // Salida 2 va al nodo 'Leer JSON'\n    return [null, msg];\n}\n\nreturn null;",
+        "func": "// Validar que el mensaje traiga una acción de la interfaz\nif (!msg.payload || typeof msg.payload !== 'object') {\n    return null; \n}\n\nlet accion = msg.payload.action;\nlet nombreEscena = msg.payload.nombre_escena || \"escena_default\";\n\n// Limpiar el nombre para evitar caracteres extraños en el archivo de la UCR\nnombreEscena = nombreEscena.replace(/[^a-z0-9_]/gi, '_').toLowerCase();\n\n// Ruta del archivo JSON dinámico basado en la escena capturada\nmsg.filename = `obra_pipea_${nombreEscena}.json`;\n\nif (accion === 'guardar_snapshot_global') {\n    // Tomamos la fotografía completa de la memoria global de todos los nodos conectados\n    let mapaNodos = global.get('pipea_nodos') || {};\n    \n    msg.payload = {\n        metadatos: {\n            tipo_registro: \"Snapshot Global de Escena\",\n            identificador_cue: msg.payload.nombre_escena,\n            fecha_captura: new Date().toISOString()\n        },\n        configuracion_nodos_capturados: mapaNodos\n    };\n    \n    // Salida 1: Envía el archivo directo al nodo 'Escribir JSON'\n    return [msg, null];\n} \n\nreturn null;\n",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 340,
+        "x": 360,
         "y": 580,
         "wires": [
             [
@@ -393,7 +321,7 @@
         "type": "function",
         "z": "eb1363c5970b07e4",
         "name": "Restaurar Memoria e Inundar Red",
-        "func": "let dataObra = JSON.parse(msg.payload);\n\nif (dataObra && dataObra.configuracion_nodos) {\n    // 1. Restaurar la base de datos de memoria global con el JSON cargado\n    global.set('pipea_nodos', dataObra.configuracion_nodos);\n    \n    // 2. Iterar sobre cada uno de los nodos restaurados y enviar su configuración definitiva a la red\n    let listaNodos = Object.values(dataObra.configuracion_nodos);\n    let mensajesMqtt = [];\n    \n    listaNodos.forEach(nodo => {\n        mensajesMqtt.push({\n            topic: `pipea/config/${nodo.id}`,\n            payload: {\n                personaje_asignado: nodo.personaje_asignado,\n                campos_actualizados: nodo.campos_configurables\n            }\n        });\n    });\n    \n    // Enviamos el arreglo completo de mensajes MQTT simultáneamente\n    return [ { payload: { conectados: listaNodos, historial: Object.values(global.get('pipea_historial') || {}) } }, mensajesMqtt ];\n}\nreturn null;",
+        "func": "let dataObra = JSON.parse(msg.payload);\n\nif (dataObra && dataObra.configuracion_nodos) {\n    // 1. Restaurar memoria global\n    global.set('pipea_nodos', dataObra.configuracion_nodos);\n    \n    let listaNodos = Object.values(dataObra.configuracion_nodos);\n    let mensajesMqtt = [];\n    \n    // 2. Construir los mensajes MQTT de configuración\n    listaNodos.forEach(nodo => {\n        mensajesMqtt.push({\n            topic: `pipea/config/${nodo.id}`,\n            payload: {\n                personaje_asignado: nodo.personaje_asignado,\n                campos_actualizados: nodo.campos_configurables\n            }\n        });\n    });\n    \n    // 3. Enviamos un solo objeto consolidado a la UI para evitar saturarla\n    let mensajeUI = { \n        payload: { \n            conectados: listaNodos, \n            historial: Object.values(global.get('pipea_historial') || {}) \n        } \n    };\n    \n    // IMPORTANTE: Retornamos primero el mensaje de UI y los MQTT ordenados\n    return [ mensajeUI, mensajesMqtt ];\n}\nreturn null;\n",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -591,21 +519,29 @@
         "wires": []
     },
     {
-        "id": "a9a16a9bf9b21c75",
-        "type": "function",
+        "id": "748bf7aab34aba95",
+        "type": "ui-template",
         "z": "eb1363c5970b07e4",
-        "name": "actualizar nodo en memoria",
-        "func": "// Recibe el nodo editado desde Vuetify\nlet nodoEditado = msg.payload;\n\nif (nodoEditado && nodoEditado.id) {\n    // Traer base de datos actual de la memoria global\n    let mapaNodos = global.get('pipea_nodos') || {};\n\n    // Sobrescribir los parámetros modificados en el objeto original\n    mapaNodos[nodoEditado.id] = nodoEditado;\n\n    // Guardar de vuelta en la memoria global\n    global.set('pipea_nodos', mapaNodos);\n}\nreturn null; // No ocupamos salida visual inmediata",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 580,
-        "y": 460,
+        "group": "bbc5a2fd25698783",
+        "page": "",
+        "ui": "",
+        "name": "panel central de configuracion",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "head": "",
+        "format": "<template>\n  <v-card class=\"pa-4\" outlined min-height=\"500\" style=\"background-color: #ffffff;\">\n    <!-- Encabezado Principal -->\n    <v-card-title class=\"d-flex justify-space-between align-center border-b pb-2 mb-4\">\n      <div class=\"text-h5 font-weight-bold text-blue-darken-3\">\n        🎬 Director de Puestas en Escena PIPEA\n      </div>\n      <v-chip color=\"primary\" variant=\"elevated\" prepend-icon=\"mdi-clapperboard\">\n        Modo Macro-Control\n      </v-chip>\n    </v-card-title>\n\n    <!-- CONTROL DE ESCENAS GLOBALES -->\n    <v-row class=\"mb-4\">\n      <v-col cols=\"12\">\n        <v-card variant=\"flat\" class=\"pa-3\" style=\"background-color: #f1f8ff; border: 1px solid #b3d7ff;\">\n          <div class=\"text-subtitle-1 font-weight-bold mb-2 text-blue-darken-4\">\n            ✨ Captura Dinámica de Estado Escénico\n          </div>\n          <v-row density=\"compact\" class=\"align-center\">\n            <v-col cols=\"12\" sm=\"7\">\n              <v-text-field\n                v-model=\"nombreEscena\"\n                label=\"Identificador de la Escena / Cue (ej: acto_1_atardecer)\"\n                variant=\"outlined\"\n                density=\"compact\"\n                hide-details\n                prepend-inner-icon=\"mdi-theater\"\n              ></v-text-field>\n            </v-col>\n            <v-col cols=\"12\" sm=\"5\" class=\"d-flex ga-2\">\n              <v-btn color=\"success\" block size=\"large\" prepend-icon=\"mdi-camera\" @click=\"capturarEstadoGlobal\">\n                Capturar Escena\n              </v-btn>\n            </v-col>\n          </v-row>\n        </v-card>\n      </v-col>\n    </v-row>\n\n    <v-divider class=\"my-2\"></v-divider>\n\n    <!-- VISTA PREVIA DE LOS PARÁMETROS ACTUALES DE LA RED -->\n    <div class=\"text-subtitle-2 font-weight-bold mb-3 text-grey-darken-3\">\n      🎛️ Monitoreo de Parámetros Activos en la Red (Fotografía en Vivo)\n    </div>\n\n    <v-alert v-if=\"!msg?.payload?.conectados || msg.payload.conectados.length === 0\" type=\"info\" variant=\"tonal\">\n      No hay nodos activos en la red para capturar configuraciones en este momento.\n    </v-alert>\n\n    <v-row v-else>\n      <v-col cols=\"12\" md=\"6\" v-for=\"nodo in msg.payload.conectados\" :key=\"nodo.id\">\n        <v-card variant=\"outlined\" class=\"pa-3 mb-2\" style=\"border-radius: 6px;\">\n          <div class=\"d-flex justify-space-between align-center mb-2\">\n            <span class=\"font-weight-bold text-primary\">{{ nodo.id }}</span>\n            <v-chip size=\"x-small\" color=\"secondary\">{{ nodo.tipo_nodo }}</v-chip>\n          </div>\n          \n          <!-- Lista compacta de sus variables actuales -->\n          <div v-for=\"campo in nodo.campos_configurables\" :key=\"campo.clave\" class=\"text-caption d-flex justify-space-between py-1 border-b-dashed\">\n            <span class=\"text-grey-darken-1\">{{ campo.clave }}:</span>\n            <span class=\"font-weight-bold\" :style=\"{ color: campo.tipo === 'color_rgb' ? campo.defecto : 'inherit' }\">\n              {{ campo.defecto }}\n            </span>\n          </div>\n        </v-card>\n      </v-col>\n    </v-row>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      nombreEscena: 'escena_inicio_ucr'\n    }\n  },\n  methods: {\n    capturarEstadoGlobal() {\n      // Al presionar el botón, despachamos una orden con el nombre de la escena\n      this.send({\n        action: 'guardar_snapshot_global',\n        nombre_escena: this.nombreEscena\n      });\n    }\n  }\n}\n</script>\n",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 490,
+        "y": 280,
         "wires": [
-            []
+            [
+                "f7_logica_archivos"
+            ]
         ]
     }
 ]
