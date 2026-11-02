@@ -3,9 +3,16 @@
         "id": "eb1363c5970b07e4",
         "type": "tab",
         "label": "Flow 2",
-        "disabled": false,
+        "disabled": true,
         "info": "",
         "env": []
+    },
+    {
+        "id": "ec1c480bb43cbf46",
+        "type": "tab",
+        "label": "Proyecto PIPEA - UCR",
+        "disabled": false,
+        "info": "Flujo de control centralizado e indestructible para la obra de teatro PIPEA."
     },
     {
         "id": "dcac3b627b1d027c",
@@ -141,22 +148,8 @@
         ],
         "order": 1,
         "className": "",
-        "visible": true,
-        "disabled": false
-    },
-    {
-        "id": "4df33a8f9b357f86",
-        "type": "ui-group",
-        "name": "Nodos",
-        "page": "6999affa22cefde2",
-        "width": "4",
-        "height": 1,
-        "order": 1,
-        "showTitle": true,
-        "className": "",
-        "visible": "true",
-        "disabled": "false",
-        "groupType": "default"
+        "visible": "false",
+        "disabled": "true"
     },
     {
         "id": "bbc5a2fd25698783",
@@ -165,8 +158,8 @@
         "page": "6999affa22cefde2",
         "width": "8",
         "height": 1,
-        "order": 2,
-        "showTitle": true,
+        "order": 1,
+        "showTitle": false,
         "className": "",
         "visible": "true",
         "disabled": "false",
@@ -210,7 +203,6 @@
         "wires": [
             [
                 "f3_debug_registro",
-                "5ea165f2e6429c1b",
                 "748bf7aab34aba95"
             ]
         ]
@@ -233,49 +225,26 @@
         "wires": []
     },
     {
-        "id": "5ea165f2e6429c1b",
-        "type": "ui-template",
-        "z": "eb1363c5970b07e4",
-        "group": "4df33a8f9b357f86",
-        "page": "",
-        "ui": "",
-        "name": "Panel izquierdo",
-        "order": 1,
-        "width": 0,
-        "height": 0,
-        "head": "",
-        "format": "<template>\n  <v-card class=\"pa-2\" outlined min-height=\"400\" style=\"background-color: #f8f9fa;\">\n    <v-card-title class=\"text-subtitle-1 font-weight-bold primary--text\">\n      🔴 Red PIPEA Escénica\n    </v-card-title>\n    <v-divider></v-divider>\n\n    <!-- SECCIÓN DE NODOS ACTIVOS -->\n    <v-list subheader flat transparent>\n      <v-list-subheader class=\"font-weight-bold text-success\">\n        Conectados en Vivo ({{ msg?.payload?.conectados?.length || 0 }})\n      </v-list-subheader>\n      \n      <!-- Agregamos @click y estilo de cursor interactivo -->\n      <v-list-item \n        v-for=\"nodo in msg?.payload?.conectados\" \n        :key=\"nodo.id\" \n        class=\"mb-1\" \n        style=\"background-color: #e8f5e9; border-left: 5px solid #4caf50; border-radius: 4px; cursor: pointer;\"\n        @click=\"seleccionarNodo(nodo)\"\n      >\n        <template v-slot:prepend>\n          <v-icon color=\"success\">mdi-wifi</v-icon>\n        </template>\n        <v-list-item-title class=\"font-weight-bold\">{{ nodo.id }}</v-list-item-title>\n        <v-list-item-subtitle>\n          Tipo: {{ nodo.tipo_nodo }} | Personaje: <v-chip size=\"x-small\" color=\"success\" variant=\"flat\">{{ nodo.personaje_asignado || 'Ninguno' }}</v-chip>\n        </v-list-item-subtitle>\n      </v-list-item>\n\n      <v-list-item v-if=\"!msg?.payload?.conectados || msg?.payload?.conectados?.length === 0\">\n        <v-list-item-title class=\"text-muted text-caption italic\">Esperando nacimiento de nodos...</v-list-item-title>\n      </v-list-item>\n    </v-list>\n\n    <v-divider class=\"my-2\"></v-divider>\n\n    <!-- SECCIÓN DE HISTORIAL / DESCONECTADOS -->\n    <v-list subheader flat transparent>\n      <v-list-subheader class=\"font-weight-bold text-grey\">\n        Historial / Alerta Desconectados\n      </v-list-subheader>\n      \n      <!-- Agregamos @click y estilo de cursor interactivo para el historial -->\n      <v-list-item \n        v-for=\"nodo in msg?.payload?.historial\" \n        :key=\"nodo.id\" \n        class=\"mb-1\" \n        style=\"background-color: #f5f5f5; border-left: 5px solid #9e9e9e; border-radius: 4px; opacity: 0.7; cursor: pointer;\"\n        @click=\"seleccionarNodo(nodo)\"\n      >\n        <template v-slot:prepend>\n          <v-icon color=\"grey\">mdi-wifi-off</v-icon>\n        </template>\n        <v-list-item-title class=\"text-grey-darken-1\">{{ nodo.id }}</v-list-item-title>\n        <v-list-item-subtitle class=\"text-caption\">\n          Última vez visto: {{ nodo.ultimo_visto }}\n        </v-list-item-subtitle>\n      </v-list-item>\n\n      <v-list-item v-if=\"!msg?.payload?.historial || msg?.payload?.historial?.length === 0\">\n        <v-list-item-title class=\"text-muted text-caption\">Sin alertas de caída de red.</v-list-item-title>\n      </v-list-item>\n    </v-list>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  methods: {\n    seleccionarNodo(nodoData) {\n      // Esta función nativa de Dashboard 2.0 transmite los datos del nodo clickeado directamente hacia la salida del bloque\n      this.send({\n        payload: nodoData\n      });\n    }\n  }\n}\n</script>",
-        "storeOutMessages": true,
-        "passthru": true,
-        "resendOnRefresh": true,
-        "templateScope": "local",
-        "className": "",
-        "x": 240,
-        "y": 320,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "f7_logica_archivos",
         "type": "function",
         "z": "eb1363c5970b07e4",
         "name": "Procesador de Archivo",
-        "func": "// Validar que el mensaje traiga una acción de la interfaz\nif (!msg.payload || typeof msg.payload !== 'object') {\n    return null; \n}\n\nlet accion = msg.payload.action;\nlet nombreEscena = msg.payload.nombre_escena || \"escena_default\";\n\n// Limpiar el nombre para evitar caracteres extraños en el archivo de la UCR\nnombreEscena = nombreEscena.replace(/[^a-z0-9_]/gi, '_').toLowerCase();\n\n// Ruta del archivo JSON dinámico basado en la escena capturada\nmsg.filename = `obra_pipea_${nombreEscena}.json`;\n\nif (accion === 'guardar_snapshot_global') {\n    // Tomamos la fotografía completa de la memoria global de todos los nodos conectados\n    let mapaNodos = global.get('pipea_nodos') || {};\n    \n    msg.payload = {\n        metadatos: {\n            tipo_registro: \"Snapshot Global de Escena\",\n            identificador_cue: msg.payload.nombre_escena,\n            fecha_captura: new Date().toISOString()\n        },\n        configuracion_nodos_capturados: mapaNodos\n    };\n    \n    // Salida 1: Envía el archivo directo al nodo 'Escribir JSON'\n    return [msg, null];\n} \n\nreturn null;\n",
+        "func": "// Validar que el mensaje traiga datos válidos de la interfaz\nif (!msg.payload || typeof msg.payload !== 'object') {\n    return null; \n}\n\n// Interceptamos el comando enviado según el msg.topic de la nueva interfaz\nlet comando = msg.topic;\nlet archivoSeleccionado = msg.payload.filename || \"obra_pipea_default.json\";\n\n// Limpiamos el nombre del archivo por seguridad y asignamos la ruta relativa portátil\narchivoSeleccionado = archivoSeleccionado.replace(/[^a-z0-9_\\.]/gi, '_').toLowerCase();\nmsg.filename = `./${archivoSeleccionado}`;\n\n// ==========================================\n// CASO 1: ORDEN DE CARGAR ARCHIVO DESDE INTERFAZ\n// ==========================================\nif (comando === \"read_file\") {\n    // Retornamos el msg listo con su filename modificado\n    // Salida 2: Va hacia el nodo 'Leer JSON'\n    return [null, msg];\n}\n\n// ==========================================\n// CASO 2: ORDEN DE GUARDAR CONFIGURACIÓN EN DISCO\n// ==========================================\nif (comando === \"save_file\") {\n    // Empaquetamos la estructura unificada limpia recibida de la UI\n    msg.payload = {\n        metadatos: {\n            tipo_registro: \"Puesta en Escena Unificada PIPEA\",\n            fecha_captura: new Date().toISOString()\n        },\n        fullObraData: msg.payload.dataToSave\n    };\n    \n    // Salida 1: Envía el archivo directo al nodo 'Escribir JSON'\n    return [msg, null];\n}\n\n// ==========================================\n// CASO 3: ORDEN DE INYECTAR Y DESPLEGAR LA CONFIGURACIÓN A LA RED\n// ==========================================\nif (comando === \"deploy_config\") {\n    // Si la interfaz ordenó un despliegue en caliente, no tocamos el disco duro.\n    // Desviamos el payload compilado directamente hacia abajo.\n    \n    // NOTA OPERATIVA: Como en tu lienzo actual la Salida 2 va hacia 'Leer JSON',\n    // necesitamos conectar un CABLE NUEVO desde la Salida 2 de este nodo \n    // directo a la entrada de 'Restaurar Memoria e Inundar Red'.\n    return [null, msg];\n}\n\nreturn null;\n",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 360,
-        "y": 580,
+        "x": 240,
+        "y": 400,
         "wires": [
             [
                 "f8_write_file"
             ],
             [
-                "f9_read_file"
+                "f9_read_file",
+                "748bf7aab34aba95"
             ]
         ]
     },
@@ -290,10 +259,12 @@
         "createDir": true,
         "overwriteFile": "true",
         "encoding": "utf8",
-        "x": 540,
-        "y": 540,
+        "x": 500,
+        "y": 340,
         "wires": [
-            []
+            [
+                "220f9cbbf7bd68f1"
+            ]
         ]
     },
     {
@@ -308,8 +279,8 @@
         "sendError": false,
         "encoding": "utf8",
         "allProps": false,
-        "x": 530,
-        "y": 620,
+        "x": 350,
+        "y": 480,
         "wires": [
             [
                 "f10_inyectar_carga"
@@ -321,22 +292,21 @@
         "type": "function",
         "z": "eb1363c5970b07e4",
         "name": "Restaurar Memoria e Inundar Red",
-        "func": "let dataObra = JSON.parse(msg.payload);\n\nif (dataObra && dataObra.configuracion_nodos) {\n    // 1. Restaurar memoria global\n    global.set('pipea_nodos', dataObra.configuracion_nodos);\n    \n    let listaNodos = Object.values(dataObra.configuracion_nodos);\n    let mensajesMqtt = [];\n    \n    // 2. Construir los mensajes MQTT de configuración\n    listaNodos.forEach(nodo => {\n        mensajesMqtt.push({\n            topic: `pipea/config/${nodo.id}`,\n            payload: {\n                personaje_asignado: nodo.personaje_asignado,\n                campos_actualizados: nodo.campos_configurables\n            }\n        });\n    });\n    \n    // 3. Enviamos un solo objeto consolidado a la UI para evitar saturarla\n    let mensajeUI = { \n        payload: { \n            conectados: listaNodos, \n            historial: Object.values(global.get('pipea_historial') || {}) \n        } \n    };\n    \n    // IMPORTANTE: Retornamos primero el mensaje de UI y los MQTT ordenados\n    return [ mensajeUI, mensajesMqtt ];\n}\nreturn null;\n",
+        "func": "// 1. Parsear el archivo .json que viene del disco duro de la computadora\nlet dataObra;\ntry {\n    dataObra = JSON.parse(msg.payload);\n} catch (e) {\n    node.error(\"El archivo de escena está corrupto o vacío: \" + e.toString());\n    return null;\n}\n\nif (dataObra && dataObra.configuracion_nodos_capturados) {\n    // 2. Restaurar la base de datos de memoria global con el JSON cargado\n    global.set('pipea_nodos', dataObra.configuracion_nodos_capturados);\n    \n    let listaNodos = Object.values(dataObra.configuracion_nodos_capturados);\n    let mensajesMqtt = [];\n    \n    // 3. Generar los mensajes MQTT para avisarle a los dispositivos físicos de sus nuevos valores\n    listaNodos.forEach(nodo => {\n        mensajesMqtt.push({\n            topic: `pipea/config/${nodo.id}`,\n            payload: {\n                personaje_asignado: nodo.personaje_asignado,\n                campos_actualizados: nodo.campos_configurables\n            }\n        });\n    });\n    \n    // 4. Empaquetar un único mensaje consolidado para actualizar la UI sin saturar la red interna\n    let mensajeUI = { \n        payload: { \n            conectados: listaNodos, \n            historial: Object.values(global.get('pipea_historial') || {}) \n        } \n    };\n    \n    // Salida 1 (Superior): Va a la plantilla visual y al debug para refrescar la pantalla\n    // Salida 2 (Inferior): Va directo al broker Mosquitto para inundar la red\n    return [ mensajeUI, mensajesMqtt ];\n}\nreturn null;",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 320,
-        "y": 720,
+        "x": 340,
+        "y": 560,
         "wires": [
             [
                 "f11_redireccionar_ui"
             ],
             [
-                "f12_mqtt_config_out",
-                "5ea165f2e6429c1b"
+                "f12_mqtt_config_out"
             ]
         ]
     },
@@ -354,7 +324,7 @@
         "statusVal": "payload.conectados.length + ' nodos cargados'",
         "statusType": "auto",
         "x": 650,
-        "y": 700,
+        "y": 560,
         "wires": []
     },
     {
@@ -372,7 +342,7 @@
         "expiry": "",
         "broker": "b3e1f0a2.broker",
         "x": 650,
-        "y": 760,
+        "y": 640,
         "wires": []
     },
     {
@@ -530,17 +500,418 @@
         "width": 0,
         "height": 0,
         "head": "",
-        "format": "<template>\n  <v-card class=\"pa-4\" outlined min-height=\"500\" style=\"background-color: #ffffff;\">\n    <!-- Encabezado Principal -->\n    <v-card-title class=\"d-flex justify-space-between align-center border-b pb-2 mb-4\">\n      <div class=\"text-h5 font-weight-bold text-blue-darken-3\">\n        🎬 Director de Puestas en Escena PIPEA\n      </div>\n      <v-chip color=\"primary\" variant=\"elevated\" prepend-icon=\"mdi-clapperboard\">\n        Modo Macro-Control\n      </v-chip>\n    </v-card-title>\n\n    <!-- CONTROL DE ESCENAS GLOBALES -->\n    <v-row class=\"mb-4\">\n      <v-col cols=\"12\">\n        <v-card variant=\"flat\" class=\"pa-3\" style=\"background-color: #f1f8ff; border: 1px solid #b3d7ff;\">\n          <div class=\"text-subtitle-1 font-weight-bold mb-2 text-blue-darken-4\">\n            ✨ Captura Dinámica de Estado Escénico\n          </div>\n          <v-row density=\"compact\" class=\"align-center\">\n            <v-col cols=\"12\" sm=\"7\">\n              <v-text-field\n                v-model=\"nombreEscena\"\n                label=\"Identificador de la Escena / Cue (ej: acto_1_atardecer)\"\n                variant=\"outlined\"\n                density=\"compact\"\n                hide-details\n                prepend-inner-icon=\"mdi-theater\"\n              ></v-text-field>\n            </v-col>\n            <v-col cols=\"12\" sm=\"5\" class=\"d-flex ga-2\">\n              <v-btn color=\"success\" block size=\"large\" prepend-icon=\"mdi-camera\" @click=\"capturarEstadoGlobal\">\n                Capturar Escena\n              </v-btn>\n            </v-col>\n          </v-row>\n        </v-card>\n      </v-col>\n    </v-row>\n\n    <v-divider class=\"my-2\"></v-divider>\n\n    <!-- VISTA PREVIA DE LOS PARÁMETROS ACTUALES DE LA RED -->\n    <div class=\"text-subtitle-2 font-weight-bold mb-3 text-grey-darken-3\">\n      🎛️ Monitoreo de Parámetros Activos en la Red (Fotografía en Vivo)\n    </div>\n\n    <v-alert v-if=\"!msg?.payload?.conectados || msg.payload.conectados.length === 0\" type=\"info\" variant=\"tonal\">\n      No hay nodos activos en la red para capturar configuraciones en este momento.\n    </v-alert>\n\n    <v-row v-else>\n      <v-col cols=\"12\" md=\"6\" v-for=\"nodo in msg.payload.conectados\" :key=\"nodo.id\">\n        <v-card variant=\"outlined\" class=\"pa-3 mb-2\" style=\"border-radius: 6px;\">\n          <div class=\"d-flex justify-space-between align-center mb-2\">\n            <span class=\"font-weight-bold text-primary\">{{ nodo.id }}</span>\n            <v-chip size=\"x-small\" color=\"secondary\">{{ nodo.tipo_nodo }}</v-chip>\n          </div>\n          \n          <!-- Lista compacta de sus variables actuales -->\n          <div v-for=\"campo in nodo.campos_configurables\" :key=\"campo.clave\" class=\"text-caption d-flex justify-space-between py-1 border-b-dashed\">\n            <span class=\"text-grey-darken-1\">{{ campo.clave }}:</span>\n            <span class=\"font-weight-bold\" :style=\"{ color: campo.tipo === 'color_rgb' ? campo.defecto : 'inherit' }\">\n              {{ campo.defecto }}\n            </span>\n          </div>\n        </v-card>\n      </v-col>\n    </v-row>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      nombreEscena: 'escena_inicio_ucr'\n    }\n  },\n  methods: {\n    capturarEstadoGlobal() {\n      // Al presionar el botón, despachamos una orden con el nombre de la escena\n      this.send({\n        action: 'guardar_snapshot_global',\n        nombre_escena: this.nombreEscena\n      });\n    }\n  }\n}\n</script>\n",
+        "format": "<template>\n  <v-app class=\"grey lighten-4\">\n    <!-- BARRA SUPERIOR CONSTANTE -->\n    <v-app-bar app color=\"teal darken-3\" dark dense elevation=\"2\">\n      <v-icon left>mdi-theater</v-icon>\n      <v-toolbar-title class=\"font-weight-bold text-uppercase tracking-wider\">\n        PIPEA - Universidad de Costa Rica (UCR)\n      </v-toolbar-title>\n      <v-spacer></v-spacer>\n      <v-chip color=\"teal lighten-1\" class=\"font-weight-medium\">\n        <v-icon left small>mdi-lan-connect</v-icon>\n        Núcleo Descentralizado Activo\n      </v-chip>\n    </v-app-bar>\n\n    <v-main class=\"pt-4\">\n      <v-container fluid class=\"px-4\">\n        <v-row>\n          <!-- ==================== PANEL IZQUIERDO: ANCHO 4 ==================== -->\n          <v-col cols=\"12\" md=\"4\">\n            \n            <!-- 1. GESTIÓN DE ARCHIVOS (GUARDAR Y CARGAR OBRA) -->\n            <v-card class=\"mb-4\" outlined elevation=\"1\">\n              <v-card-title class=\"subtitle-1 font-weight-bold grey--text text--darken-3 pb-1\">\n                <v-icon left color=\"teal\">mdi-folder-sync</v-icon> Puesta en Escena\n              </v-card-title>\n              <v-card-text>\n                <v-select\n                  v-model=\"selectedFile\"\n                  :items=\"availableFiles\"\n                  label=\"Seleccionar Obra Guardada (.json)\"\n                  outlined\n                  dense\n                  hide-details\n                  class=\"mb-3\"\n                ></v-select>\n                <v-row dense>\n                  <v-col cols=\"6\">\n                    <v-btn color=\"teal\" dark block dense @click=\"loadScene\">\n                      <v-icon left>mdi-file-download</v-icon> Cargar\n                    </v-btn>\n                  </v-col>\n                  <v-col cols=\"6\">\n                    <v-btn color=\"blue-grey text-white\" dark block dense @click=\"saveScene\">\n                      <v-icon left>mdi-content-save</v-icon> Guardar\n                    </v-btn>\n                  </v-col>\n                </v-row>\n              </v-card-text>\n            </v-card>\n\n            <!-- 2. CUADRO DE NODOS ACTIVOS (MONITOREO EN VIVO) -->\n            <v-card outlined elevation=\"1\">\n              <v-card-title class=\"subtitle-1 font-weight-bold grey--text text--darken-3 pb-1\">\n                <v-icon left color=\"teal\">mdi-router-wireless-settings</v-icon> Nodos Activos en Red\n              </v-card-title>\n              <v-card-text class=\"pa-0\">\n                <v-list dense max-height=\"400\" class=\"overflow-y-auto\">\n                  <div v-if=\"activeNodes.length === 0\" class=\"text-center py-6 grey--text text-caption\">\n                    Esperando ráfagas de saludo de los nodos...\n                  </div>\n                  <v-list-item v-for=\"(node, index) in activeNodes\" :key=\"index\" class=\"border-bottom\">\n                    <v-list-item-avatar size=\"32\" class=\"teal lighten-5\">\n                      <v-icon color=\"teal\" small>mdi-developer-board</v-icon>\n                    </v-list-item-avatar>\n                    <v-list-item-content>\n                      <v-list-item-title class=\"font-weight-medium text-caption\">{{ node.name }}</v-list-item-title>\n                      <v-list-item-subtitle class=\"text-caption\">Tipo: {{ node.type }} | Personaje: {{ node.assignedPersonaje || 'Ninguno' }}</v-list-item-subtitle>\n                    </v-list-item-content>\n                    <v-list-item-action>\n                      <v-chip x-small color=\"success\" outlined>Online</v-chip>\n                    </v-list-item-action>\n                  </v-list-item>\n                </v-list>\n              </v-card-text>\n            </v-card>\n          </v-col>\n\n          <!-- ==================== PANEL DERECHO / CENTRAL: ANCHO 8 ==================== -->\n          <v-col cols=\"12\" md=\"8\">\n            <v-card outlined elevation=\"1\">\n              <v-tabs v-model=\"activeTab\" background-color=\"teal darken-4\" dark slider-color=\"teal lighten-2\">\n                <v-tab><v-icon left small>mdi-account-box-multiple</v-icon>1. Registro de Nodos</v-tab>\n                <v-tab><v-icon left small>mdi-animation-play</v-icon>2. Director de Escenas (Pies)</v-tab>\n              </v-tabs>\n\n              <v-tabs-items v-model=\"activeTab\" class=\"pa-4\">\n                \n                <!-- PESTAÑA 1: ASIGNACIÓN DE PERSONAJES Y PARÁMETROS GEOMÉTRICOS -->\n                <v-tab-item>\n                  <div class=\"text-subtitle-2 font-weight-bold mb-3 grey--text text--darken-2\">\n                    Vincular dispositivos físicos descubiertos a Personajes Teatrales:\n                  </div>\n                  <v-row v-for=\"(node, index) in activeNodes\" :key=\"'reg-'+index\" class=\"align-center mb-2\" dense>\n                    <v-col cols=\"3\">\n                      <v-chip class=\"font-weight-bold\" block outlined color=\"teal\">{{ node.name }} ({{ node.type }})</v-chip>\n                    </v-col>\n                    <v-col cols=\"3\">\n                      <v-select\n                        v-model=\"node.assignedPersonaje\"\n                        :items=\"personajesOptions\"\n                        label=\"Asignar Personaje\"\n                        outlined dense hide-details\n                        @change=\"syncNodeAssignments\"\n                      ></v-select>\n                    </v-col>\n                    <v-col cols=\"3\" class=\"px-2\">\n                      <v-slider\n                        v-model=\"node.coordX\"\n                        label=\"Coord X\"\n                        min=\"0\" max=\"100\" thumb-label dense hide-details color=\"teal\"\n                        @change=\"syncNodeAssignments\"\n                      ></v-slider>\n                    </v-col>\n                    <v-col cols=\"3\" class=\"px-2\">\n                      <v-slider\n                        v-model=\"node.coordY\"\n                        label=\"Coord Y\"\n                        min=\"0\" max=\"100\" thumb-label dense hide-details color=\"teal\"\n                        @change=\"syncNodeAssignments\"\n                      ></v-slider>\n                    </v-col>\n                  </v-row>\n                </v-tab-item>\n\n                <!-- PESTAÑA 2: MATRIZ DE PIES RESTRICTIVA (MÁXIMA SEGURIDAD) -->\n                <v-tab-item>\n                  <v-row class=\"mb-2 align-center\">\n                    <v-col cols=\"8\">\n                      <div class=\"text-subtitle-2 font-weight-bold grey--text text--darken-2\">\n                        Matriz de Ejecución: Vincula un Pie de Escena a Acciones precisas.\n                      </div>\n                    </v-col>\n                    <v-col cols=\"4\" class=\"text-right\">\n                      <v-btn color=\"teal\" dark small @click=\"addPieRow\">\n                        <v-icon left small>mdi-plus</v-icon> Agregar Fila de Pie\n                      </v-btn>\n                    </v-col>\n                  </v-row>\n\n                  <!-- TABLA DE PIES DINÁMICA -->\n                  <v-card flat class=\"grey lighten-5 pa-3 rounded-lg border\">\n                    <div v-if=\"pieMatrix.length === 0\" class=\"text-center py-6 grey--text\">\n                      No hay pies estructurados para esta escena.\n                    </div>\n\n                    <v-row v-for=\"(row, pIdx) in pieMatrix\" :key=\"'pie-'+pIdx\" class=\"mb-4 pa-2 white rounded shadow-sm border align-center\" dense>\n                      <!-- 1. Pie o Evento Disparador -->\n                      <v-col cols=\"3\">\n                        <v-select\n                          v-model=\"row.pieEvent\"\n                          :items=\"pieTriggersOptions\"\n                          label=\"Pie (Trigger)\"\n                          outlined dense hide-details\n                        ></v-select>\n                      </v-col>\n\n                      <!-- 2. Personaje que Recibe el Estímulo -->\n                      <v-col cols=\"3\">\n                        <v-select\n                          v-model=\"row.targetPersonaje\"\n                          :items=\"personajesOptions\"\n                          label=\"Personaje Escénico\"\n                          outlined dense hide-details\n                          @change=\"onPersonajeChange(row)\"\n                        ></v-select>\n                      </v-col>\n\n                      <!-- 3. Comportamientos Dinámicos Filtrados por los Nodos de ese Personaje -->\n                      <v-col cols=\"5\" class=\"grey lighten-4 rounded pa-2\">\n                        <div class=\"text-caption font-weight-bold teal--text mb-1\">Reacciones de Nodos Vinculados:</div>\n                        <div v-if=\"getNodesForPersonaje(row.targetPersonaje).length === 0\" class=\"text-caption text-italic grey--text\">\n                          Asigne nodos a este personaje en la Pestaña 1.\n                        </div>\n                        \n                        <!-- Muestra sub-selectores restrictivos solo para los nodos asignados al personaje seleccionado -->\n                        <v-row v-for=\"(node, nIdx) in getNodesForPersonaje(row.targetPersonaje)\" :key=\"nIdx\" class=\"align-center mb-1\" dense>\n                          <v-col cols=\"5\" class=\"text-caption font-weight-bold grey--text text--darken-2\">\n                            {{ node.name }}:\n                          </v-col>\n                          <v-col cols=\"7\">\n                            <v-select\n                              v-model=\"row.nodeActions[node.name]\"\n                              :items=\"getActionPresetsForNode(node.type)\"\n                              label=\"Acción Fija\"\n                              outlined dense hide-details class=\"white\"\n                              backgroundColor=\"white\"\n                            ></v-select>\n                          </v-col>\n                        </v-row>\n                      </v-col>\n\n                      <!-- Botón Eliminar Fila -->\n                      <v-col cols=\"1\" class=\"text-center\">\n                        <v-btn icon color=\"error\" small @click=\"removePieRow(pIdx)\">\nmdi-delete\n\n\n\nmdi-shield-lock\nValidación restrictiva inmune a errores de tipeo.\n\n<v-btn color=\"teal darken-2\" dark class=\"px-6\" @click=\"emitFullConfig\">\nmdi-cloud-upload Inyectar a Cues de Obra\n\nexport default {\ndata() {\nreturn {\nactiveTab: 0,\nselectedFile: 'obra_pipea_ensayo1.json',\navailableFiles: ['obra_pipea_ensayo1.json', 'obra_pipea_general.json', 'obra_pipea_vacia.json'],\n// Inventario y Estado de los Nodos Activos en Red (Alimentado dinámicamente)\nactiveNodes: [\n{ type: 'LucíEA', name: 'Segura', assignedPersonaje: 'Ambiente', coordX: 15, coordY: 45 },\n{ type: 'LucíEA', name: 'Fallas', assignedPersonaje: 'Ambiente', coordX: 85, coordY: 45 },\n{ type: 'BotEAón', name: 'Jimmy', assignedPersonaje: 'Banda', coordX: 50, coordY: 20 },\n{ type: 'NeblinEA', name: 'Mapalina', assignedPersonaje: 'Ambiente', coordX: 10, coordY: 80 }\n],\n// Catálogo de Personajes Teatrales (Mapeado directo del Excel del profesor)\npersonajesOptions: ['Nadie', 'Ambiente', 'Banda', 'Sofía', 'Nuria', 'Fidel'],\n// Catálogo de Pies o Disparadores de Escena Fijos (Mapeado directo del Excel)\npieTriggersOptions: [\n'Tiempo alcanza 3 minutos',\n'Tiempo alcanza 17 minutos',\n'El controlador da la señal',\n'El guitarrista toca el botón de su solo',\n'El tecladista toca el acorde Sib7',\n'Alguien toca a Sofía'\n],\n// Matriz de Trabajo del Show (Estructura de Filas de Pies)\npieMatrix: [\n{ pieEvent: 'Tiempo alcanza 3 minutos', targetPersonaje: 'Ambiente', nodeActions: { 'Segura': 'Luces Azules', 'Fallas': 'Luces Moradas' } }\n]\n};\n},\nwatch: {\n// Escucha la llegada de datos de Node-RED (Cargas de archivos .json del disco duro)\nmsg: {\nhandler(newMsg) {\nif (newMsg && newMsg.payload) {\n// Si el mensaje es una actualización de la lista de archivos del servidor\nif (newMsg.payload.availableFiles) {\nthis.availableFiles = newMsg.payload.availableFiles;\n}\n// Si el mensaje contiene el volcado completo de una obra cargada\nif (newMsg.payload.fullObraData) {\nthis.activeNodes = newMsg.payload.fullObraData.activeNodes || this.activeNodes;\nthis.pieMatrix = newMsg.payload.fullObraData.pieMatrix || this.pieMatrix;\n}\n// Si es un nuevo nodo saludando por MQTT\nif (newMsg.payload.newNodeDiscovered) {\nconst exists = this.activeNodes.some(n => n.name === newMsg.payload.newNodeDiscovered.name);\nif (!exists) {\nthis.activeNodes.push({\ntype: newMsg.payload.newNodeDiscovered.type,\nname: newMsg.payload.newNodeDiscovered.name,\nassignedPersonaje: '',\ncoordX: 0,\ncoordY: 0\n});\n}\n}\n}\n},\nimmediate: true,\ndeep: true\n}\n},\nmethods: {\n// Retorna los nodos registrados bajo un personaje específico\ngetNodesForPersonaje(personajeName) {\nreturn this.activeNodes.filter(node => node.assignedPersonaje === personajeName);\n},\n// Diccionario restrictivo de Presets por Tipo de Dispositivo (Garantiza datos libres de errores)\ngetActionPresetsForNode(nodeType) {\nconst presets = {\n'LucíEA': ['Luces Azules', 'Luces Moradas', 'Luz de Día', 'Luz de Lluvia', 'Luz Triste', 'Luz Feliz', 'Apagar Todo'],\n'NeblinEA': ['Ráfaga Corta', 'Neblina Continua', 'Apagar'],\n'BotEAón': ['Habilitar Interrupción', 'Deshabilitar'],\n'ClEAudio': ['Sonido Trueno', 'Sonido Amanecer', 'Stop'],\n'SofíEA': ['Pantalla Triste', 'Pantalla Feliz', 'Modo Reposo']\n};\nreturn presets[nodeType] || ['Encender', 'Apagar', 'Reset'];\n},\naddPieRow() {\nthis.pieMatrix.push({ pieEvent: '', targetPersonaje: '', nodeActions: {} });\n},\nremovePieRow(index) {\nthis.pieMatrix.splice(index, 1);\n},\nonPersonajeChange(row) {\n// Limpia las acciones anteriores para evitar conflictos si cambia de personaje la fila\nrow.nodeActions = {};\n},\nsyncNodeAssignments() {\n// Sincroniza en RAM interna los cambios rápidos de sliders o personajes\n},\n// Envía la orden al Backend de Node-RED para leer un archivo específico\nloadScene() {\nthis.send({\ntopic: \"read_file\",\npayload: { filename: this.selectedFile }\n});\n},\n// Envía la orden al Backend de Node-RED para escribir toda la matriz actual en disco duro\nsaveScene() {\nconst pack = {\nactiveNodes: this.activeNodes,\npieMatrix: this.pieMatrix\n};\nthis.send({\ntopic: \"save_file\",\npayload: {\nfilename: this.selectedFile,\ndataToSave: pack\n}\n});\n},\n// Compila la configuración y la inyecta al flujo MQTT para distribuirse en los dispositivos físicos\nemitFullConfig() {\nconst compiledPayload = {\ntimestamp: Date.now(),\nmeta: { currentFile: this.selectedFile },\nnodesProfile: this.activeNodes,\nexecutionMatrix: this.pieMatrix.map(row => {\nreturn {\ntrigger: row.pieEvent,\npersonaje: row.targetPersonaje,\ntopicTarget: pipea/evento/${row.targetPersonaje.toLowerCase().trim()},\nactionsByNode: row.nodeActions\n};\n})\n};\n// Salida principal dirigida al flujo de Node-RED\nthis.send({\ntopic: \"deploy_config\",\npayload: compiledPayload\n});\n}\n}\n};\n.border-bottom {\nborder-bottom: 1px solid rgba(0, 0, 0, 0.08);\n}\n.border-top {\nborder-top: 1px solid rgba(0, 0, 0, 0.08);\n}\n.shadow-sm {\nbox-shadow: 0 1px 3px rgba(0,0,0,0.05);\n}\n.tracking-wider {\nletter-spacing: 0.5px;\n}\n",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 490,
-        "y": 280,
+        "x": 330,
+        "y": 240,
         "wires": [
             [
                 "f7_logica_archivos"
+            ]
+        ]
+    },
+    {
+        "id": "220f9cbbf7bd68f1",
+        "type": "debug",
+        "z": "eb1363c5970b07e4",
+        "name": "escribir",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "escucha_registros_id",
+        "type": "mqtt in",
+        "z": "ec1c480bb43cbf46",
+        "name": "Escucha Registros",
+        "topic": "pipea/nodo/anuncio",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "b3e1f0a2.broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 80,
+        "wires": [
+            [
+                "gestor_memoria_id"
+            ]
+        ]
+    },
+    {
+        "id": "gestor_memoria_id",
+        "type": "function",
+        "z": "ec1c480bb43cbf46",
+        "name": "Gestor de Memoria Global",
+        "func": "// 1. Inicializar o recuperar la estructura unificada desde el contexto global\nlet fullObraData = global.get(\"fullObraData\") || {\n    activeNodes: {}, // Estructura: { \"id_nodo\": { id, ip, rssi, status, lastSeen } }\n    pieMatrix: [],   // Matriz de Cues / Pies teatrales\n    archivoActivo: \"obra_nueva.json\"\n};\n\n// Obtener el tópico del mensaje para realizar el ruteo lógico\nconst topic = msg.topic || \"\";\n\n// 2. CASO A: Procesar anuncio MQTT de nodo físico (\"pipea/nodo/anuncio\")\nif (topic === \"pipea/nodo/anuncio\" || topic.endsWith(\"/anuncio\")) {\n    try {\n        // Asegurar que el payload sea un objeto\n        let anuncio = (typeof msg.payload === \"string\") ? JSON.parse(msg.payload) : msg.payload;\n\n        // Validar que el anuncio contenga un identificador de nodo\n        if (anuncio && anuncio.id) {\n            const nodeId = anuncio.id;\n            const tiempoActual = new Date().toLocaleTimeString();\n\n            // Mapear y actualizar/crear el nodo en la jerarquía estricta\n            fullObraData.activeNodes[nodeId] = {\n                id: nodeId,\n                ip: anuncio.ip || \"0.0.0.0\",\n                rssi: anuncio.rssi || -100,\n                status: anuncio.status || \"online\",\n                lastSeen: tiempoActual\n            };\n        }\n    } catch (e) {\n        node.error(\"Error parseando anuncio MQTT: \" + e.message, msg);\n    }\n}\n// 3. CASO B: Procesar actualizaciones desde el UI-Template o carga de archivos\nelse if (msg.payload && msg.payload.fullObraData) {\n    // Si viene directamente el objeto consolidado, hacemos un merge o reemplazo controlado\n    if (msg.payload.fullObraData.activeNodes) {\n        fullObraData.activeNodes = msg.payload.fullObraData.activeNodes;\n    }\n    if (msg.payload.fullObraData.pieMatrix) {\n        fullObraData.pieMatrix = msg.payload.fullObraData.pieMatrix;\n    }\n    if (msg.payload.fullObraData.archivoActivo) {\n        fullObraData.archivoActivo = msg.payload.fullObraData.archivoActivo;\n    }\n}\n\n// 4. Limpieza higiénica de nodos desconectados (Opcional - TTL de 30 segundos)\n// Si deseas un entorno reactivo estricto, puedes descomentar las siguientes líneas\n/*\nconst AHORA = Date.now();\nfor (const id in fullObraData.activeNodes) {\n    // Si el payload original incluyó una marca de tiempo Unix, puedes validar la vida del nodo aquí\n}\n*/\n\n// 5. Salvar el estado actualizado en el contexto global de Node-RED\nglobal.set(\"fullObraData\", fullObraData);\n\n// 6. Empaquetar la salida exactamente como la espera el HTML consolidado del Template\nmsg.payload = {\n    fullObraData: fullObraData\n};\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 80,
+        "wires": [
+            [
+                "ver_red_id",
+                "panel_central_id_nuevo"
+            ]
+        ]
+    },
+    {
+        "id": "ver_red_id",
+        "type": "debug",
+        "z": "ec1c480bb43cbf46",
+        "name": "Ver Red Consolidada",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "procesador_archivo_id",
+        "type": "function",
+        "z": "ec1c480bb43cbf46",
+        "name": "Procesador de Archivo",
+        "func": "if (!msg.payload || typeof msg.payload !== 'object') {\n    return null;\n}\n\nlet comando = msg.topic;\nlet archivoSeleccionado = msg.payload.filename || 'obra_pipea_default.json';\narchivoSeleccionado = archivoSeleccionado.replace(/[^a-z0-9.]/gi, '_').toLowerCase();\nmsg.filename = './' + archivoSeleccionado;\n\nif (comando === 'read_file') {\n    return [null, msg];\n}\n\nif (comando === 'save_file') {\n    msg.payload = {\n        metadatos: {\n            tipo_registro: 'Puesta en Escena Unificada PIPEA',\n            fecha_captura: new Date().toISOString()\n        },\n        fullObraData: msg.payload.dataToSave\n    };\n    return [msg, null];\n}\n\nif (comando === 'deploy_config') {\n    return [null, msg];\n}\n\nreturn null;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 300,
+        "wires": [
+            [
+                "escribir_json_id"
+            ],
+            [
+                "leer_json_id",
+                "restaurar_memoria_id"
+            ]
+        ]
+    },
+    {
+        "id": "escribir_json_id",
+        "type": "file",
+        "z": "ec1c480bb43cbf46",
+        "name": "Escribir JSON",
+        "filename": "filename",
+        "filenameType": "msg",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 580,
+        "y": 240,
+        "wires": [
+            [
+                "escribir_debug_id"
+            ]
+        ]
+    },
+    {
+        "id": "escribir_debug_id",
+        "type": "debug",
+        "z": "ec1c480bb43cbf46",
+        "name": "escribir",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "leer_json_id",
+        "type": "file in",
+        "z": "ec1c480bb43cbf46",
+        "name": "Leer JSON",
+        "filename": "filename",
+        "filenameType": "msg",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "utf8",
+        "allProps": false,
+        "x": 150,
+        "y": 420,
+        "wires": [
+            [
+                "parser_json_id"
+            ]
+        ]
+    },
+    {
+        "id": "parser_json_id",
+        "type": "json",
+        "z": "ec1c480bb43cbf46",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 150,
+        "y": 220,
+        "wires": [
+            [
+                "panel_central_id_nuevo"
+            ]
+        ]
+    },
+    {
+        "id": "restaurar_memoria_id",
+        "type": "function",
+        "z": "ec1c480bb43cbf46",
+        "name": "Restaurar Memoria e Inundar Red",
+        "func": "if (msg.topic === 'deploy_config' && msg.payload) {\n    let outputMsgs = [];\n    let matrix = msg.payload.executionMatrix || [];\n    \n    matrix.forEach(row => {\n        if (row.targetPersonaje) {\n            let topic = pipea/config/${row.targetPersonaje.toLowerCase().trim()};\n            outputMsgs.push({\n                topic: topic,\n                payload: {\n                    triggerEvent: row.pieEvent,\n                    actions: row.nodeActions\n                }\n            });\n        }\n    });\n    \n    return [outputMsgs];\n}\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 520,
+        "wires": [
+            [
+                "actualizar_ui_id",
+                "mqtt_config_definitiva_id"
+            ]
+        ]
+    },
+    {
+        "id": "actualizar_ui_id",
+        "type": "debug",
+        "z": "ec1c480bb43cbf46",
+        "name": "Actualizar UI Post-Carga",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "mqtt_config_definitiva_id",
+        "type": "mqtt out",
+        "z": "ec1c480bb43cbf46",
+        "name": "MQTT Config Definitiva",
+        "topic": "",
+        "qos": "1",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b3e1f0a2.broker",
+        "x": 690,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "monitor_prueba_id",
+        "type": "mqtt in",
+        "z": "ec1c480bb43cbf46",
+        "name": "Monitor de Prueba",
+        "topic": "pipea/config/#",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "b3e1f0a2.broker",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 690,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "523945ccd93d33b3",
+        "type": "inject",
+        "z": "ec1c480bb43cbf46",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{   \"availableFiles\": [\"obra_pipea_ensayo1.json\", \"obra_pipea_general.json\", \"obra_pipea_vacia.json\"],   \"fullObraData\": {     \"activeNodes\": [],     \"pieMatrix\": []   } }",
+        "payloadType": "json",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "panel_central_id_nuevo"
+            ]
+        ]
+    },
+    {
+        "id": "sim_inject_lucia_id",
+        "type": "inject",
+        "z": "ec1c480bb43cbf46",
+        "name": "Simular LucíEA (Segura)",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "pipea/nodo/anuncio",
+        "payload": "{\"name\":\"Segura\",\"type\":\"LucíEA\",\"assignedPersonaje\":\"Ambiente\",\"coordX\":25,\"coordY\":60}",
+        "payloadType": "json",
+        "x": 190,
+        "y": 600,
+        "wires": [
+            [
+                "sim_mqtt_out_id"
+            ]
+        ]
+    },
+    {
+        "id": "sim_inject_neblina_id",
+        "type": "inject",
+        "z": "ec1c480bb43cbf46",
+        "name": "Simular NeblinEA (Fallas)",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "pipea/nodo/anuncio",
+        "payload": "{\"name\":\"Fallas\",\"type\":\"NeblinEA\",\"assignedPersonaje\":\"Ambiente\",\"coordX\":75,\"coordY\":60}",
+        "payloadType": "json",
+        "x": 190,
+        "y": 650,
+        "wires": [
+            [
+                "sim_mqtt_out_id"
+            ]
+        ]
+    },
+    {
+        "id": "sim_inject_guitarra_id",
+        "type": "inject",
+        "z": "ec1c480bb43cbf46",
+        "name": "Simular BotEAón (Jimmy)",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "pipea/nodo/anuncio",
+        "payload": "{\"name\":\"Jimmy\",\"type\":\"BotEAón\",\"assignedPersonaje\":\"Banda\",\"coordX\":50,\"coordY\":20}",
+        "payloadType": "json",
+        "x": 190,
+        "y": 700,
+        "wires": [
+            [
+                "sim_mqtt_out_id"
+            ]
+        ]
+    },
+    {
+        "id": "sim_mqtt_out_id",
+        "type": "mqtt out",
+        "z": "ec1c480bb43cbf46",
+        "name": "Publicar Anuncio Simulado",
+        "topic": "",
+        "qos": "1",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b3e1f0a2.broker",
+        "x": 500,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "panel_central_id_nuevo",
+        "type": "ui-template",
+        "z": "ec1c480bb43cbf46",
+        "group": "bbc5a2fd25698783",
+        "page": "",
+        "ui": "",
+        "name": "panel central de configuracion",
+        "order": 2,
+        "width": 12,
+        "height": 10,
+        "format": "<v-card flat class=\"bg-grey-lighten-4 pa-2\" width=\"100%\">\n  <!-- Barra superior unificada de la UCR -->\n  <v-alert type=\"info\" color=\"teal-darken-3\" icon=\"mdi-theater\" class=\"mb-4 text-subtitle-2 font-weight-bold text-uppercase\">\n    PIPEA - UNIVERSIDAD DE COSTA RICA\n  </v-alert>\n\n  <v-row dense>\n    <!-- ==================== PANEL IZQUIERDO ==================== -->\n    <v-col cols=\"12\" md=\"4\">\n      <v-card class=\"mb-4\" variant=\"outlined\" elevation=\"1\">\n        <v-card-title class=\"text-subtitle-2 font-weight-bold text-grey-darken-3 pb-1\">\n          <v-icon start size=\"small\" color=\"teal\">mdi-folder-sync</v-icon> Archivo de Obra (.json)\n        </v-card-title>\n        <v-card-text class=\"pt-2\">\n          \n          <!-- Entrada de texto libre para escribir o ver el nombre del archivo activo -->\n          <v-text-field\n            v-model=\"msg.selectedFile\"\n            label=\"Nombre del Archivo Activo\"\n            variant=\"outlined\"\n            density=\"compact\"\n            hide-details\n            class=\"mb-2\"\n          ></v-text-field>\n\n          <!-- Listado de archivos en disco -->\n          <div class=\"text-caption text-grey font-weight-bold mb-1\">Archivos en disco (Clic para elegir):</div>\n          <div class=\"mb-3 pa-1 bg-white border rounded\" style=\"max-height: 100px; overflow-y: auto;\">\n            <div v-for=\"file in msg.availableFiles\" :key=\"file\" class=\"mb-1\">\n              <v-btn size=\"x-small\" block variant=\"outlined\" color=\"teal\" @click=\"msg.selectedFile = file\">\n                {{ file }}\n              </v-btn>\n            </div>\n          </div>\n          \n          <v-row dense>\n            <v-col cols=\"6\">\n              <v-btn color=\"teal\" size=\"small\" block @click=\"send({topic: 'read_file', payload: {filename: msg.selectedFile}})\">\n                <v-icon start size=\"small\">mdi-file-download</v-icon> Cargar\n              </v-btn>\n            </v-col>\n            <v-col cols=\"6\">\n              <v-btn color=\"blue-grey\" size=\"small\" block @click=\"send({topic: 'save_file', payload: {filename: msg.selectedFile, dataToSave: {activeNodes: msg.payload.fullObraData.activeNodes, pieMatrix: msg.payload.fullObraData.pieMatrix}}})\">\n                <v-icon start size=\"small\">mdi-content-save</v-icon> Guardar\n              </v-btn>\n            </v-col>\n          </v-row>\n        </v-card-text>\n      </v-card>\n\n      <!-- LISTA DE NODOS ACTIVOS -->\n      <v-card variant=\"outlined\" elevation=\"1\">\n        <v-card-title class=\"text-subtitle-2 font-weight-bold text-grey-darken-3 pb-1\">\n          <v-icon start size=\"small\" color=\"teal\">mdi-router-wireless-settings</v-icon> Nodos Activos en Red\n        </v-card-title>\n        <v-card-text class=\"pa-0\">\n          <div v-if=\"!msg.payload || !msg.payload.fullObraData || !msg.payload.fullObraData.activeNodes || msg.payload.fullObraData.activeNodes.length === 0\" class=\"text-center py-6 text-grey text-caption\">\n            Esperando saludos de nodos...\n          </div>\n          <div class=\"bg-white\" style=\"max-height: 250px; overflow-y: auto;\">\n            <v-list density=\"compact\" class=\"pa-0\">\n              <v-list-item v-for=\"(node, index) in msg.payload.fullObraData.activeNodes\" :key=\"index\" class=\"border-bottom py-1\">\n                <v-list-item-title class=\"font-weight-medium text-caption\">{{ node.name }} ({{ node.type }})</v-list-item-title>\n                <v-list-item-subtitle class=\"text-caption\">Personaje: {{ node.assignedPersonaje || 'Sin asignar' }}</v-list-item-subtitle>\n              </v-list-item>\n            </v-list>\n          </div>\n        </v-card-text>\n      </v-card>\n    </v-col>\n\n    <!-- ==================== PANEL DERECHO ==================== -->\n    <v-col cols=\"12\" md=\"8\">\n      <v-card variant=\"outlined\" elevation=\"1\">\n        \n        <v-tabs v-model=\"msg.activeTab\" bg-color=\"teal-darken-4\" slider-color=\"teal-lighten-2\" density=\"compact\">\n          <v-tab value=\"tab-1\" class=\"text-caption\"><v-icon start size=\"small\">mdi-account-box-multiple</v-icon>1. Registro de Nodos</v-tab>\n          <v-tab value=\"tab-2\" class=\"text-caption\"><v-icon start size=\"small\">mdi-animation-play</v-icon>2. Director de Escenas</v-tab>\n        </v-tabs>\n\n        <v-card-text class=\"pa-3\">\n          <v-window v-model=\"msg.activeTab\">\n            \n            <!-- PESTAÑA 1: SLIDERS -->\n            <v-window-item value=\"tab-1\">\n              <div class=\"text-caption font-weight-bold mb-3 text-grey-darken-2\">Asignación de Coordenadas y Personajes Teatrales:</div>\n              <div v-if=\"!msg.payload || !msg.payload.fullObraData || !msg.payload.fullObraData.activeNodes || msg.payload.fullObraData.activeNodes.length === 0\" class=\"text-caption text-grey text-italic py-4 text-center\">No hay nodos conectados. Usa los simuladores MQTT externos.</div>\n              \n              <div class=\"bg-grey-lighten-5 pa-1 rounded border\" style=\"max-height: 380px; overflow-y: auto;\">\n                <v-row v-for=\"(node, index) in msg.payload.fullObraData.activeNodes\" :key=\"'reg-' + index\" class=\"align-center mb-2 bg-white pa-2 rounded border mx-0\" dense>\n                  <v-col cols=\"3\">\n                    <v-chip size=\"small\" class=\"font-weight-bold\" color=\"teal\" variant=\"outlined\">{{ node.name }}</v-chip>\n                  </v-col>\n                  <v-col cols=\"3\">\n                    <v-select v-model=\"node.assignedPersonaje\" :items=\"['Nadie', 'Ambiente', 'Banda', 'Sofía', 'Nuria', 'Fidel']\" label=\"Personaje\" variant=\"outlined\" density=\"compact\" hide-details></v-select>\n                  </v-col>\n                  <v-col cols=\"3\"><v-slider v-model=\"node.coordX\" label=\"X\" min=\"0\" max=\"100\" thumb-label density=\"compact\" hide-details color=\"teal\"></v-slider></v-col>\n                  <v-col cols=\"3\"><v-slider v-model=\"node.coordY\" label=\"Y\" min=\"0\" max=\"100\" thumb-label density=\"compact\" hide-details color=\"teal\"></v-slider></v-col>\n                </v-row>\n              </div>\n            </v-window-item>\n\n            <!-- PESTAÑA 2: MATRIZ DE PIES CON SCROLL CSS NATIVO -->\n            <v-window-item value=\"tab-2\">\n              <v-row class=\"mb-2 align-center\" dense>\n                <v-col cols=\"7\"><div class=\"text-caption font-weight-bold text-grey-darken-2\">Matriz de Ejecución: Vincula un Pie a Acciones fijas.</div></v-col>\n                <v-col cols=\"5\" class=\"text-right\">\n                  <v-btn color=\"teal\" size=\"x-small\" @click=\"msg.payload.fullObraData.pieMatrix.push({pieEvent: '', targetPersonaje: 'Nadie', nodeActions: {}})\">\n                    <v-icon start size=\"x-small\">mdi-plus</v-icon> Agregar Pie\n                  </v-btn>\n                </v-col>\n              </v-row>\n\n              <div class=\"bg-grey-lighten-5 pa-2 rounded border\" style=\"max-height: 320px; overflow-y: auto;\">\n                <div v-if=\"!msg.payload || !msg.payload.fullObraData || !msg.payload.fullObraData.pieMatrix || msg.payload.fullObraData.pieMatrix.length === 0\" class=\"text-center py-6 text-grey text-caption\">No hay pies configurados para esta escena.</div>\n                \n                <v-row v-for=\"(row, pIdx) in msg.payload.fullObraData.pieMatrix\" :key=\"'pie-' + pIdx\" class=\"mb-3 pa-2 bg-white rounded border align-center mx-0\" dense>\n                  <v-col cols=\"3\">\n                    <v-text-field v-model=\"row.pieEvent\" label=\"Pie (Trigger Libre)\" placeholder=\"ej. Entra Sofía\" variant=\"outlined\" density=\"compact\" hide-details></v-text-field>\n                  </v-col>\n                  <v-col cols=\"3\">\n                    <v-select v-model=\"row.targetPersonaje\" :items=\"['Nadie', 'Ambiente', 'Banda', 'Sofía', 'Nuria', 'Fidel']\" label=\"Personaje\" variant=\"outlined\" density=\"compact\" hide-details @update:model-value=\"row.nodeActions={}\"></v-select>\n                  </v-col>\n                  <v-col cols=\"5\" class=\"bg-grey-lighten-4 rounded pa-2\">\n                    <div class=\"text-caption text-teal font-weight-bold mb-1\">Nodos vinculados:</div>\n                    <v-row v-for=\"(node, nIdx) in msg.payload.fullObraData.activeNodes.filter(n => n.assignedPersonaje === row.targetPersonaje)\" :key=\"nIdx\" class=\"align-center mb-1\" dense>\n                      <v-col cols=\"5\" class=\"text-caption font-weight-bold text-grey-darken-3\">{{ node.name }}:</v-col>\n                      <v-col cols=\"7\">\n                        <v-select v-model=\"row.nodeActions[node.name]\" :items=\"node.type === 'LucíEA' ? ['Luces Azules', 'Luces Moradas', 'Luz de Día', 'Apagar Todo'] : node.type === 'NeblinEA' ? ['Ráfaga Corta', 'Neblina Continua', 'Apagar'] : ['Encender', 'Apagar']\" label=\"Acción Preset\" variant=\"outlined\" density=\"compact\" hide-details class=\"bg-white\"></v-select>\n                      </v-col>\n                    </v-row>\n                  </v-col>\n                  <v-col cols=\"1\" class=\"text-center\">\n                    <v-btn icon=\"mdi-delete\" color=\"error\" variant=\"text\" size=\"small\" @click=\"msg.payload.fullObraData.pieMatrix.splice(pIdx, 1)\"></v-btn>\n                  </v-col>\n                </v-row>\n              </div>\n\n              <div class=\"d-flex justify-space-between align-center border-top mt-3 pt-2\">\n                <span class=\"text-caption text-grey\"><v-icon size=\"small\" class=\"mr-1\" color=\"success\">mdi-shield-lock</v-icon>Validación sin errores de tipeo.</span>\n                <v-btn color=\"teal-darken-2\" size=\"small\" class=\"px-4\" @click=\"send({topic: 'deploy_config', payload: {nodesProfile: msg.payload.fullObraData.activeNodes, executionMatrix: msg.payload.fullObraData.pieMatrix}})\">\n                  <v-icon start size=\"small\">mdi-cloud-upload</v-icon> Inyectar a Cues de Obra\n                </v-btn>\n              </div>\n            </v-window-item>\n\n          </v-window>\n        </v-card-text>\n      </v-card>\n    </v-col>\n  </v-row>\n</v-card>\n",
+        "storeOutMessages": true,
+        "passthru": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 410,
+        "y": 160,
+        "wires": [
+            [
+                "procesador_archivo_id"
             ]
         ]
     }
