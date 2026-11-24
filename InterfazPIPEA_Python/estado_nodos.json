@@ -1,0 +1,271 @@
+{
+  "nodos": {
+    "tecladopc_01": {
+      "node_id": "tecladopc_01",
+      "nombre": "Teclado USB (tecladopc)",
+      "rol": "propone",
+      "tipo": "teclado",
+      "multiples_activadores": true,
+      "personajes": [
+        "sofia",
+        "banda"
+      ],
+      "disparadores_disponibles": [
+        "a",
+        "e",
+        "q",
+        "f",
+        "t",
+        "o",
+        "s",
+        "u",
+        "w",
+        "y",
+        "n",
+        "r",
+        "j",
+        "l",
+        "i",
+        "k",
+        "p",
+        "c",
+        "g",
+        "m",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "0"
+      ],
+      "mapeos_actuales": [
+        {
+          "disparador": "e",
+          "evento": "encendida",
+          "topico_evento": "pipea/evento/encendida"
+        },
+        {
+          "disparador": "f",
+          "evento": "feliz",
+          "topico_evento": "pipea/evento/feliz"
+        },
+        {
+          "disparador": "o",
+          "evento": "sorpresa",
+          "topico_evento": "pipea/evento/sorpresa"
+        },
+        {
+          "disparador": "g",
+          "evento": "emergencia",
+          "topico_evento": "pipea/evento/emergencia"
+        }
+      ],
+      "comentarios": "",
+      "conectado": false,
+      "ultimo_visto": null
+    },
+    "boton_01": {
+      "node_id": "boton_01",
+      "nombre": "Pulsador Escenario (BotonEA)",
+      "rol": "propone",
+      "tipo": "pulsador",
+      "multiples_activadores": false,
+      "personajes": [
+        "banda"
+      ],
+      "mapeos_actuales": [
+        {
+          "disparador": "",
+          "evento": "soloGuitarra",
+          "topico_evento": "pipea/evento/soloGuitarra"
+        }
+      ],
+      "comentarios": "",
+      "conectado": false,
+      "ultimo_visto": null
+    },
+    "sofia_01": {
+      "node_id": "sofia_01",
+      "nombre": "Pantalla SofíEA (sofia)",
+      "rol": "reacciona",
+      "tipo": "sofiea",
+      "personajes": [
+        "chispanuria"
+      ],
+      "parametros_disponibles": [
+        {
+          "id": "reaccion_sofia",
+          "nombre": "Reacción de SofíEA",
+          "tipo": "lista",
+          "opciones": [
+            "apagada",
+            "encendida",
+            "tranquila",
+            "feliz",
+            "triste",
+            "sorpresa",
+            "sospecha",
+            "susto",
+            "wacala",
+            "ok",
+            "no_ok",
+            "al_reves",
+            "izquierda",
+            "derecha",
+            "arriba",
+            "abajo",
+            "pregunta",
+            "cuidado",
+            "emergencia",
+            "musica"
+          ]
+        }
+      ],
+      "acciones_actuales": [
+        {
+          "evento": "encendida",
+          "topico_evento": "pipea/evento/encendida",
+          "accion": "encendida",
+          "parametros": {
+            "reaccion_sofia": "encendida"
+          }
+        },
+        {
+          "evento": "sorpresa",
+          "topico_evento": "pipea/evento/sorpresa",
+          "accion": "feliz",
+          "parametros": {
+            "reaccion_sofia": "wacala"
+          }
+        }
+      ],
+      "comentarios": "",
+      "conectado": false,
+      "ultimo_visto": null,
+      "multiples_activadores": true
+    },
+    "lucia_segura_01": {
+      "node_id": "lucia_segura_01",
+      "nombre": "Luces DMX (Lucía Segura)",
+      "rol": "reacciona",
+      "tipo": "luminaria_dmx",
+      "personajes": [
+        "banda"
+      ],
+      "parametros_disponibles": [
+        {
+          "id": "escena_secuencia",
+          "nombre": "Escena / Secuencia / Acción",
+          "tipo": "lista",
+          "opciones": [
+            "oscura",
+            "coloresFrios",
+            "coloresCalidos",
+            "coloresVivos",
+            "introOscura",
+            "frioSuave",
+            "frioFuerte",
+            "calidoSuave",
+            "calidoFuerte",
+            "cumbiaSuave",
+            "cumbiaFuerte",
+            "soloGuitarra",
+            "soloBajo",
+            "soloBateria",
+            "cero",
+            "derecha",
+            "izquierda",
+            "circulos"
+          ]
+        },
+        {
+          "id": "intensidad",
+          "nombre": "Intensidad (0-255)",
+          "tipo": "int",
+          "min": 0,
+          "max": 255
+        },
+        {
+          "id": "duracion",
+          "nombre": "Duración transición (s)",
+          "tipo": "int",
+          "min": 0,
+          "max": 30
+        },
+        {
+          "id": "paleta",
+          "nombre": "Paleta (LuciEA)",
+          "tipo": "lista",
+          "opciones": [
+            "1",
+            "m",
+            "p",
+            "d",
+            "a",
+            "D"
+          ]
+        },
+        {
+          "id": "curva",
+          "nombre": "Curva (ChuncheDMX)",
+          "tipo": "lista",
+          "opciones": [
+            "l",
+            "c",
+            "r",
+            "s"
+          ]
+        }
+      ],
+      "acciones_actuales": [
+        {
+          "evento": "soloGuitarra",
+          "accion": "soloGuitarra",
+          "parametros": {
+            "escena_secuencia": "soloGuitarra",
+            "intensidad": 255,
+            "duracion": 1,
+            "paleta": "1",
+            "curva": "l"
+          },
+          "topico_evento": "pipea/evento/soloGuitarra"
+        }
+      ],
+      "comentarios": "",
+      "conectado": false,
+      "ultimo_visto": null
+    }
+  },
+  "configurados": [
+    "lucia_segura_01",
+    "tecladopc_01",
+    "sofia_01",
+    "boton_01"
+  ],
+  "personajes": {
+    "sofia": {
+      "nombre": "sofia",
+      "descripcion": "",
+      "origen": "nodo"
+    },
+    "chispanuria": {
+      "nombre": "chispanuria",
+      "descripcion": "",
+      "origen": "nodo"
+    },
+    "chispafidel": {
+      "nombre": "chispafidel",
+      "descripcion": "",
+      "origen": "nodo"
+    },
+    "banda": {
+      "nombre": "banda",
+      "descripcion": "",
+      "origen": "nodo"
+    }
+  }
+}
